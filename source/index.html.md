@@ -1,239 +1,123 @@
----
-title: API Reference
+### Bank
 
-language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
-  - ruby
-  - python
-  - javascript
+#### Description
+Bank API provides the list of financial institutions that Gluwa supports. Get the list of banks by country, or search for a specific institution.
 
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
+#### Method
 
-includes:
-  - errors
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code class="highlighter-rouge">/V4.1/Banks/{country}</code></td>
+</tr>
+</tbody>
+</table>
 
-search: true
----
+#### Request Parameters
+<table>
+<thead>
+<tr>
+<th style="text-align: left">Name</th>
+<th style="text-align: left">Type/Value</th>
+<th style="text-align: left">Required</th>
+<th style="text-align: left">Path/Query</th>
+<th style="text-align: left">Description</th>
+ 
+</tr>
+</thead>
+<tbody>
+  
+<tr>
+<td style="text-align: left">country</td>
+<td style="text-align: left">String enum: [World, US, KR]</td>
+<td style="text-align: left">yes</td>
+<td style="text-align: left">Path</td>
+<td style="text-align: left">Filter banks by country.</td>
+</tr>
+</tbody>
+  
+<tbody>
+ 
+<tr>
+<td style="text-align: left">offset</td>
+<td style="text-align: left">Integer (int64)</td>
+<td style="text-align: left">no</td>
+<td style="text-align: left">Query</td>
+<td style="text-align: left">Number of banks to skip from the beginning of the list; used for pagination. Defaults to 0.</td>
+</tr>
+    
+</tbody>
+ 
+<tbody>
+  
+<tr>
+<td style="text-align: left">limit</td>
+<td style="text-align: left">Integer (int64)</td>
+<td style="text-align: left">no</td>
+<td style="text-align: left">Query</td>
+<td style="text-align: left">Number of banks to include in the result. Defaults to 25.</td>
+</tr>
+    
+</tbody>
+</table>
 
-# Introduction
+#### Responses
+200
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+<table>
+<thead>
+<tr>
+<th style="text-align: left">Code</th>
+<th style="text-align: left">Type/Value</th>
+<th style="text-align: left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left">200</td>
+<td style="text-align: left">Array: Financial Institution </td>
+<td style="text-align: left">List of Banks</td>
+</tr>
+<tr>
+<td style="text-align: left">400</td>
+<td style="text-align: left">RequestValidationWithoutBodyError</td>
+<td style="text-align: left">Invalid country parameter is provided.</td>
+</tr>
+</tbody>
+</table>
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+#### Reponse Example
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
-
-# Authentication
-
-> To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
 ```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
-
-```json
+200
 [
   {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "InstitutionCode": "string",
+    "DisplayName": "string",
+    "LogoImageUrl": "string"
   }
 ]
 ```
-
-This endpoint retrieves all kittens.
-
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
 ```
+400
 
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
 }
 ```
-
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
