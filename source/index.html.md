@@ -13,7 +13,6 @@ includes:
 
 search: true
 ---
-
 # Introduction
 
 Welcome to the Gluwa API.
