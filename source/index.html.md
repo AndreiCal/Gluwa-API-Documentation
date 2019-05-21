@@ -12,6 +12,8 @@ includes:
 - errors
 
 search: true
+---
+
 # Introduction
 
 Welcome to the Gluwa API Reference Documentation.
@@ -20,7 +22,12 @@ Welcome to the Gluwa API Reference Documentation.
 
 Bank API provides the list of financial institutions that Gluwa supports. Get the list of banks by country, or search for a specific institution.
 
-## Get the list of banks supported by Gluwa
+
+## List banks
+
+Get the list of banks supported by Gluwa
+
+
 ### Method
 
 | Method | URL                                      |
@@ -37,6 +44,62 @@ Bank API provides the list of financial institutions that Gluwa supports. Get th
 ### Responses
 
 > Sucessful Response (200)
+```json
+[
+{
+"InstitutionCode": "string",
+"DisplayName": "string",
+"LogoImageUrl": "string"
+}
+]
+```
+
+> Invalid country parameter error response (400)
+
+```json
+{
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+}
+```
+Response Codes
+
+| Code | Type/Value                        | Description                            |
+|------|-----------------------------------|----------------------------------------|
+| 200  | Array: Financial Institution      | List of Banks                          |
+| 400  | RequestValidationWithoutBodyError | Invalid country parameter is provided. |
+
+## Search banks
+
+Search through the list of banks by keyword
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET    | <code class="highlighter-rouge">/V4.1/Banks/{country}/Searches/{keyword}</code> |
+
+### Parameters
+
+| Name    | Type/Value                   | Required | Path/Query | Description                              |
+|---------|------------------------------|----------|------------|------------------------------------------|
+| country | String enum: [World, US, KR] | yes      | Path       | Filter banks by country.                 |
+| keyword | String                       | yes      | Path       | Bank name to search for.                 |
+| offset  | Integer (int64)              | no       | Query      | Number of banks to skip from the beginning of the list; used for pagination. Defaults to 0. |
+| limit   | Integer (int64)              | no       | Query      | Number of banks to include in the result. Defaults to 25. |
+
+### Responses
+
+> Succesful Response (200)
+
 
 ```json
 [
@@ -68,6 +131,7 @@ Response Codes
 
 | Code | Type/Value                        | Description                            |
 |------|-----------------------------------|----------------------------------------|
+
 | 200  | Array: Financial Institution      | List of Banks                          |
 | 400  | RequestValidationWithoutBodyError | Invalid country parameter is provided. |
 
@@ -129,7 +193,11 @@ Response codes:
 
 A funding source represents the source of fiat currency such as bank accounts and credit cards. Users can make deposits to Gluwa from their funding sources, or withdraw from Gluwa to their funding sources. Funding source API can be used to create funding sources under a user or to retrieve a list of funding sources that belong to a user. Micro deposit endpoints are for initiating and completing the verification process that is required before a funding source can be used. This resource also includes an endpoint that change the status of a funding source to deactivated.
 
-## Retrieve a funding source of any type with specified ID.
+
+## Show a funding source
+
+Retrieve a funding source of any type with specified ID.
+
 ### Method
 
 | Method | URL                                      |
@@ -148,15 +216,17 @@ A funding source represents the source of fiat currency such as bank accounts an
 
 ```json
 {
-  "ID": "string (uuid)",
-  "Country": "string",
-  "Currency": "string",
-  "Type": "string",
-  "Status": "string",
-  "InstitutionDisplayName": "string",
-  "Last4DigitsOfAccountNumber": "string",
-  "CryptoAddress": "string",
-  "Nickname": "string"
+
+"ID": "string (uuid)",
+"Country": "string",
+"Currency": "string",
+"Type": "string",
+"Status": "string",
+"InstitutionDisplayName": "string",
+"Last4DigitsOfAccountNumber": "string",
+"CryptoAddress": "string",
+"Nickname": "string"
+
 }
 ```
 
@@ -164,47 +234,54 @@ A funding source represents the source of fiat currency such as bank accounts an
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Access to this funding source is denied (403)
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Funding source is not found (400)
 
 ```json 
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Internal server error (500)
 
 ```json
 {
+
   "ID": "string (uuid)",
   "Code": "string",
   "Message": "string",
@@ -250,55 +327,62 @@ A deactivated funding source cannot be viewed or used for withdrawals.
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Access to this funding source is denied (403)
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Funding source is not found (400)
 
 ```json 
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Internal server error (500)
 
 ```json
 {
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
 }
 ``` 
-Response Codes:
 
+Response Codes:
 
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
@@ -308,7 +392,10 @@ Response Codes:
 | 404  | NotFoundError                     | Funding source is not found.             |
 | 500  | InternalServerError               | Internal server error.                   |
 
-## Retrieve the list of funding sources of all types that belong to the user.
+
+## List funding sources
+Retrieve the list of funding sources of all types that belong to the user.
+
 
 ### Method
 
@@ -322,17 +409,17 @@ Response Codes:
 
 ```json
 [
-  {
-    "ID": "string (uuid)",
-    "Country": "string",
-    "Currency": "string",
-    "Type": "string",
-    "Status": "string",
-    "InstitutionDisplayName": "string",
-    "Last4DigitsOfAccountNumber": "string",
-    "CryptoAddress": "string",
-    "Nickname": "string"
-  }
+{
+"ID": "string (uuid)",
+"Country": "string",
+"Currency": "string",
+"Type": "string",
+"Status": "string",
+"InstitutionDisplayName": "string",
+"Last4DigitsOfAccountNumber": "string",
+"CryptoAddress": "string",
+"Nickname": "string"
+}
 ]
 ```
 
@@ -340,22 +427,24 @@ Response Codes:
 
 ```json
 {
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
 }
 ```
 
-> Response Codes
-
+Response Codes
 
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
 | 200  | Array: FundingSourceResponse                           | List of Funding Resources              |
 | 500  | InternalServerError               | Internal server error.                   |
 
-## Initiate a micro deposit for bank account verification.
+
+## Create a micro deposit
+Initiate a micro deposit for bank account verification.
 
 ### Method
 
@@ -375,7 +464,7 @@ Response Codes:
 
 ```json
 {
-  "ID": "string (uuid)"
+"ID": "string (uuid)"
 }
 ```
 
@@ -383,16 +472,18 @@ Response Codes:
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -400,25 +491,27 @@ Response Codes:
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 > Cannot initiate micro deposit due to invalid state of the funding source (403)
 
 ```json
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
 }
 
 ```
@@ -427,9 +520,11 @@ Response Codes:
 
 ```json
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -438,10 +533,12 @@ Response Codes:
 
 ```json
 {
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -449,16 +546,16 @@ Response Codes:
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
 }
 ```
 Response Codes
@@ -503,16 +600,18 @@ Response Codes
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -520,9 +619,11 @@ Response Codes
 
 ```json
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -530,16 +631,18 @@ Response Codes
 
 ```json 
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -547,9 +650,11 @@ Response Codes
 
 ```json
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -557,9 +662,11 @@ Response Codes
 
 ```json
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -567,10 +674,12 @@ Response Codes
 
 ```json
 {
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -578,16 +687,18 @@ Response Codes
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -604,7 +715,9 @@ Response Codes
 | 500  | InternalServerError.               | Internal server error.                   |
 | 503  | ServiceUnavailableError              | Service is currently unavailable due to bank downtime.                  |
 
+
 ## Verify Crypto Funding Source. 
+
 We only support this for P2PKH BTC addresses.
 
 ### Method
@@ -626,8 +739,10 @@ We only support this for P2PKH BTC addresses.
 
 ```json
 {
-  "Message": "string",
-  "SignedMessage": "string"
+
+"Message": "string",
+"SignedMessage": "string"
+
 }
 ```
 
@@ -649,16 +764,18 @@ We only support this for P2PKH BTC addresses.
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -666,26 +783,28 @@ We only support this for P2PKH BTC addresses.
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
 }
 ```
 
 > Funding source is not found (404)
 
 ```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -694,10 +813,12 @@ We only support this for P2PKH BTC addresses.
 
 ```json
 {
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 
@@ -705,16 +826,18 @@ We only support this for P2PKH BTC addresses.
 
 ```json
 {
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
 }
 ```
 Response Codes
@@ -734,7 +857,9 @@ Response Codes
 # FundingSourceCrypto
 A funding source represents the source of fiat currency such as bank accounts and credit cards. Users can make deposits to Gluwa from their funding source, or withdraw from Gluwa to their funding source. These endpoints are used to create cryptocurrency funding sources under a user or to retrieve cryptocurrency funding sources that belong to a user.
 
-## Retrieve a list of crypto funding sources that belong to the current user.
+
+## List crypto funding sources
+Retrieve a list of crypto funding sources that belong to the current user.
 
 ### Method
 
@@ -750,17 +875,19 @@ A funding source represents the source of fiat currency such as bank accounts an
 
 ```json
 [
-  {
-    "ID": "string (uuid)",
-    "Country": "string",
-    "Currency": "string",
-    "Type": "string",
-    "Status": "string",
-    "InstitutionDisplayName": "string",
-    "Last4DigitsOfAccountNumber": "string",
-    "CryptoAddress": "string",
-    "Nickname": "string"
-  }
+
+{
+"ID": "string (uuid)",
+"Country": "string",
+"Currency": "string",
+"Type": "string",
+"Status": "string",
+"InstitutionDisplayName": "string",
+"Last4DigitsOfAccountNumber": "string",
+"CryptoAddress": "string",
+"Nickname": "string"
+}
+
 ]
 ```
 
@@ -771,8 +898,8 @@ Response Codes
 |------|-----------------------------------|------------------------------------------|
 | 200 | Array: FundingSourceResponse           | List of funding sources.|
 
-
 ## Create a new cryptocurrency funding source.
+
 
 ### Method
 
@@ -796,11 +923,13 @@ Response Codes
 
 ```json
 {
-  "Currency": "string",
-  "Address": "string",
-  "Message": "string",
-  "SignedMessage": "string",
-  "Nickname": "string"
+
+"Currency": "string",
+"Address": "string",
+"Message": "string",
+"SignedMessage": "string",
+"Nickname": "string"
+
 }
 ```
 
@@ -810,7 +939,9 @@ Response Codes
 
 ```json
 {
-    "ID": "string (uuid)"
+
+"ID": "string (uuid)"
+
 }
 ```
 
@@ -818,6 +949,7 @@ Response Codes
 
 ```json
 {
+
   "InnerErrors": [
     {
       "Code": "string",
@@ -3218,3 +3350,57 @@ Response Codes
 | 404  | NotFoundError                 | Wallet not found. |
 | 500  | InternalServerError            | Server Error. |
     
+=======
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+}
+```
+
+> Funding source already exists (409)
+
+```json
+{
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+}
+```
+
+
+> Internal server error. (500)
+
+```json
+{
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+}
+```
+
+Response Codes
+
+
+| Code | Type/Value                        | Description                              |
+|------|-----------------------------------|------------------------------------------|
+| 201 | GuidResponse           | Funding source is created.|
+| 400  | RequestValidationWithoutBodyError               | Invalid request body.                   |
+| 400  | Validation Error               | Invalid request Body                  |
+| 409 | Conflict Error             | Funding Source Already Exists                  |
+| 500  | InternalServerError.               | Internal server error.                   |
+
