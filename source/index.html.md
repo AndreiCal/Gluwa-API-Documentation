@@ -15,7 +15,6 @@ search: true
 ---
 # Gluwa API Documentation
 **Table of Contents**
-<!-- Start Document Outline -->
 
 * [Gluwa Overview](#gluwa-overview)
 * [Getting Started with Gluwa API](#getting-started-with-gluwa-api)
@@ -57,12 +56,12 @@ search: true
 	* [Create or update webhook URL and secret](#create-or-update-webhook-url-and-secret)
 	* [Generate QR code for transaction request](#generate-qr-code-for-transaction-request)
 
-<!-- End Document Outline -->
 # Gluwa Overview
 
-Gluwa is a fiat-pegged cryptocurrency wallet that provides *Bitcoin?* deposit and withdrawal. The Gluwa wallet enables users to process national and international transactions, allowing for secure management of money, credit and identity.
+Gluwa is a fiat-pegged cryptocurrency wallet that provides *Bitcoin* deposit and withdrawal. The Gluwa wallet enables users to process national and international transactions, allowing for secure management of money, credit and identity.
 
-Through Gluwa's public-facing REST API, users can
+Through Gluwa's public-facing REST API, users can:
+
 * Get information about supported Banks
 * Manage funding sources
 * Manage transactions
@@ -71,13 +70,38 @@ Through Gluwa's public-facing REST API, users can
 
 # Getting Started with Gluwa API
 
+## Get an Access Token from Auth API
 
-## Auth API and Gluwa API
+> Example request
 
-### Get an Access Token from Auth API
+```shell
+curl https://auth.gluwa.com/connect/token \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d '{
+    "client_id": "8a1c2424-fe73-473a-828f-fb848a3c2cc9",
+    "client_secret": "Testing123!",
+    "grant_type: "password",
+    "username": "gTester1",
+    "password": "V0Jkw0nZnz",
+    "scope": "wallet.read transaction.read"
+}'
+```
+
+> Response Token
+
+```json
+{
+"access_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6IkQyOEJENjcwOTI5QTBDN0U5MTMyRkE4NDgwRUMwNDlDMDBFRTIxQkYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiIwb3ZXY0pLYURINlJNdnFFZ093RW5BRHVJYjgifQ.eyJuYmYiOjE1NTcwMjgyNTgsImV4cCI6MTU1NzAzMTg1OCwiaXNzIjoiaHR0cHM6Ly9hdXRoLmdsdXdhLmNvbSIsImF1ZCI6WyJodHRwczovL2F1dGguZ2x1d2EuY29tL3Jlc291cmNlcyIsIkdsdXdhQXBpIl0sImNsaWVudF9pZCI6IjhhMWMyNDI0LWZlNzMtNDczYS04MjhmLWZiODQ4YTNjMmNjOSIsInN1YiI6ImE2MDkxN2Q5LTRlNWQtNGE0Yi04MGZjLTEwY2FmYmM3MWYzOSIsImF1dGhfdGltZSI6MTU1NzAyODI1OCwiaWRwIjoibG9jYWwiLCJJc1Rlc3RVc2VyIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV9udW1iZXJfdmVyaWZpZWQiOnRydWUsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJ3YWxsZXQucmVhZCJdLCJhbXIiOlsicHdkIl19.gEK1SnM-FKyFR_rvF4WqI5zbwMfRI9lbJIh93wYvMruOzhtkv1m6m2VbwNGQEaxoNHuPNCbcuxXUa6I4TZXnKwMvSWAxXBXC9WoVU9cbtT4Q2nm8Y9-EfkUCOncaYX_ERbDetGjN4joiOyPAjRluKDBU491_uh66DHmAWGsP8o_JFI7tOk8yGKI2p8SUlvP_Y2YcfviAyjkhUOcFEuzTT1laB10CcrXMjUQyygiSU_HGHcskGcndig9HHSdI55LDNOgoCe_111U2AsPmZDzKPMRJ2RfFP3Y2AHB3lmDZvEILvuvJBcHtBEoEhRgZt5vk1arEC0o0cNmC42LBc1uFEQ",
+"expires_in":3600,
+"token_type":"Bearer"
+}
+```
+
 In order to obtain an access token using the below method, you need a Client ID, Client Secret, Username and Password.
 
 In this example, we’ll use the following information:
+
 * **Client ID:** `8a1c2424-fe73-473a-828f-fb848a3c2cc9`
 * **Client Secret:** `Testing123!`
 * **Username:** `gTester1`
@@ -85,31 +109,30 @@ In this example, we’ll use the following information:
 
 An access token will be returned when posting to the below URL with a body containing the following:
 
-#### Method
+### Method
+
 | Method | URL                                      |
 |--------|------------------------------------------|
 | POST    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/token</code> |
 
-#### Header
+### Header
+
 | Header | URL                                      |
 |--------|------------------------------------------|
 | Content-Type   | <code class="highlighter-rouge">application/x-www-form-urlencoded</code> |
 
 
-#### Request Body
-```json 
-client_id=8a1c2424-fe73-473a-828f-fb848a3c2cc9&client_secret=Testing123!&grant_type=password&username=gTester1&password=V0Jkw0nZnz&scope=wallet.read transaction.read
-```
+### Request Body
 
-#### Response Token
+| Name                    | Type/Value | Required | Description                              |
+|----------------------|--------------|----------|------------|------------------------------------------|
+| `client_id`          | String        | yes            | Identifier of the client                 |
+| `client_secret`  | String        | yes | Secret key of the client |
+| `grant_type`        | String        | yes | Type of the grant |
+| `username`            | String        | yes | Username of the client |
+| `password`            | String        | yes | Password of the client |
+| `scope`                  | String        | yes | One or more registered scopes.           |
 
-```json 
-{
-"access_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6IkQyOEJENjcwOTI5QTBDN0U5MTMyRkE4NDgwRUMwNDlDMDBFRTIxQkYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiIwb3ZXY0pLYURINlJNdnFFZ093RW5BRHVJYjgifQ.eyJuYmYiOjE1NTcwMjgyNTgsImV4cCI6MTU1NzAzMTg1OCwiaXNzIjoiaHR0cHM6Ly9hdXRoLmdsdXdhLmNvbSIsImF1ZCI6WyJodHRwczovL2F1dGguZ2x1d2EuY29tL3Jlc291cmNlcyIsIkdsdXdhQXBpIl0sImNsaWVudF9pZCI6IjhhMWMyNDI0LWZlNzMtNDczYS04MjhmLWZiODQ4YTNjMmNjOSIsInN1YiI6ImE2MDkxN2Q5LTRlNWQtNGE0Yi04MGZjLTEwY2FmYmM3MWYzOSIsImF1dGhfdGltZSI6MTU1NzAyODI1OCwiaWRwIjoibG9jYWwiLCJJc1Rlc3RVc2VyIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV9udW1iZXJfdmVyaWZpZWQiOnRydWUsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJ3YWxsZXQucmVhZCJdLCJhbXIiOlsicHdkIl19.gEK1SnM-FKyFR_rvF4WqI5zbwMfRI9lbJIh93wYvMruOzhtkv1m6m2VbwNGQEaxoNHuPNCbcuxXUa6I4TZXnKwMvSWAxXBXC9WoVU9cbtT4Q2nm8Y9-EfkUCOncaYX_ERbDetGjN4joiOyPAjRluKDBU491_uh66DHmAWGsP8o_JFI7tOk8yGKI2p8SUlvP_Y2YcfviAyjkhUOcFEuzTT1laB10CcrXMjUQyygiSU_HGHcskGcndig9HHSdI55LDNOgoCe_111U2AsPmZDzKPMRJ2RfFP3Y2AHB3lmDZvEILvuvJBcHtBEoEhRgZt5vk1arEC0o0cNmC42LBc1uFEQ",
-"expires_in":3600,
-"token_type":"Bearer"
-}
-```
 
 ### Get Wallet Details
 In order to get details for a Wallet, use the access token retrieve earlier in the header of the request.
