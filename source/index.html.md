@@ -1458,7 +1458,6 @@ Retrieve a list of transactions sent to or from a specified wallet.
 }
 ```
 
-```
 > Server Error (500)
 
 ```json
