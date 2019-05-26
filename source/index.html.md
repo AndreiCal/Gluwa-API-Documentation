@@ -210,7 +210,7 @@ Using the code obtained at step 3, you can now request ID Token and Access Token
 grant_type=authorization_code&code=<your_authorization_code>&client_id=<your_client_id>&client_secret=<your_client_secret>&redirect_uri=<your_redirect_uri_used_in_1>
 ```
 
-** Make sure that the requests to the auth server are always using HTTPS. **
+**Make sure that the requests to the auth server are always using HTTPS.**
 
 #### Response
 
@@ -281,7 +281,7 @@ The steps for this flow is similar to Authorization Code flow, with a few differ
 
 While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For exmaple, `Guid` can work.
 
-*Note: The allowed scope parameter may vary from client to client. Please ask the administrator your client is allowed to request.*
+**Note: The allowed scope parameter may vary from client to client. Please ask the administrator your client is allowed to request.**
 
 When `nonce` is present in the authorize request, the auth server will include nonce as one of the properties of the id token. The client MUST verify that the nonce in the id token is the same as the nonce it passed in to the authorize request.
 
@@ -346,7 +346,7 @@ Logout from your own client, not the Gluwa Auth server.
 
 Should you really want to logout from both your own client and on Gluwa Auth server, you can use the following endpoints to do so.
 
-** Note that if you do decide to use these endpoints, you are logging the user out completely from Gluwa Auth system, meaning that they will also be logged out of other clients that may not be in your control. **
+**Note that if you do decide to use these endpoints, you are logging the user out completely from Gluwa Auth system, meaning that they will also be logged out of other clients that may not be in your control.**
 
 ### Revocation endpoint
 
@@ -379,7 +379,7 @@ Again, if state is provided, the auth server will give this back in your `post_r
 
 The documentation for session status detection can be found [here](http://openid.net/specs/openid-connect-session-1_0.html#ChangeNotification). 
 
-* Note that this is up to the client to implement. *
+**Note that this is up to the client to implement.**
 
 
 
