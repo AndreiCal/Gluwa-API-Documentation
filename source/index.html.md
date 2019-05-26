@@ -31,8 +31,8 @@ search: true
 	* [List funding sources](#list-funding-sources)
 	* [Create a micro deposit](#create-a-micro-deposit)
 	* [Verify a micro deposit](#verify-a-micro-deposit)
+* [Crypto Funding Source](#crypto-funding-source)
 	* [Verify Crypto Funding Source.](#verify-crypto-funding-source)
-* [FundingSourceCrypto](#fundingsourcecrypto)
 	* [List crypto funding sources](#list-crypto-funding-sources)
 	* [Create a cryptocurrency funding source.](#create-a-cryptocurrency-funding-source)
 * [Transaction](#transaction)
@@ -45,7 +45,7 @@ search: true
 	* [Create a new transaction using quote provided](#create-a-new-transaction-using-quote-provided)
 * [User](#user)
 	* [Search by username](#search-by-username)
-* [VirtualAccount](#virtualaccount)
+* [Virtual Account](#virtual-account)
 	* [Get virtual accounts linked to a wallet](#get-virtual-accounts-linked-to-a-wallet)
 * [Wallet](#wallet)
 	* [List wallets](#list-wallets)
@@ -1042,7 +1042,14 @@ Response Codes
 | 503  | ServiceUnavailableError           | Service is currently unavailable due to bank downtime. |
 
 
-## Verify Crypto Funding Source. 
+
+
+# Crypto Funding Source
+A funding source represents the source of fiat currency such as bank accounts and credit cards. Users can make deposits to Gluwa from their funding source, or withdraw from Gluwa to their funding source. 
+
+These endpoints are used to create cryptocurrency funding sources under a user or to retrieve cryptocurrency funding sources that belong to a user.
+
+## Verify Crypto Funding Source
 
 We only support this for P2PKH BTC addresses.
 
@@ -1180,12 +1187,6 @@ Response Codes
 | 404  | NotFoundError                     | Microdeposit was never initiated         |
 | 500  | InternalServerError.              | Internal server error.                   |
 | 503  | ServiceUnavailableError           | Service is currently unavailable due to bank downtime. |
-
-# FundingSourceCrypto
-A funding source represents the source of fiat currency such as bank accounts and credit cards. Users can make deposits to Gluwa from their funding source, or withdraw from Gluwa to their funding source. 
-
-These endpoints are used to create cryptocurrency funding sources under a user or to retrieve cryptocurrency funding sources that belong to a user.
-
 
 ## List crypto funding sources
 Retrieve a list of crypto funding sources that belong to the current user.
@@ -2592,7 +2593,7 @@ Response Codes
 | 400  | BadRequestError        | Bad Request                         |
 | 500 | InternalServerError                 | Server Error.      |
 
-# VirtualAccount
+# Virtual Account
 
 *** Korean Users ONLY. ***
 
