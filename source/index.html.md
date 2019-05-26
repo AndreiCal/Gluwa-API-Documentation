@@ -134,82 +134,60 @@ An access token will be returned when posting to the below URL with a body conta
 | `scope`                  | String        | yes | One or more registered scopes.           |
 
 
-### Get Wallet Details
-In order to get details for a Wallet, use the access token retrieve earlier in the header of the request.
-
-#### Method
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">https://api.gluwa.com/V4.1/Wallets</code> |
-
-#### Header
-| Header | URL                                      |
-|--------|------------------------------------------|
-| Authorization   | Bearer <code class="highlighter-rouge">{access_token}</code> |
-
-#### Response
-
-```json
-{
-"ID":"61b04bb0-70fc-464c-9c7e-ab56dbdc3366",
-"Balance":"4994501",
-"Country":"KR",
-"Currency":"KRW",
-"Status":"Active"
-}
-```
-
-## OpenID Connect
+# OpenID Connect
 Gluwa Auth server uses IdentityServer4 to authenticate/authorize its users. It strictly follows the specification laid out in [OpenID Connect Core 1.0](http://openid.net/specs/openid-connect-core-1_0.html).
 
-### Authorization Code flow
+## Authorization Code flow
 
 This flow is suitable for Clients that can maintain a Client Secret between themselves and the Authorization Server. For example, clients that have a backend server to keep the client secret safe.
 
 For details of the spec, please see [here](http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth). Note that not all OpenID connect features may be supported.
 
-#### Step 1. Prepare a request to Authorize Endpoint.
+### Step 1. Prepare a request to Authorize Endpoint.
 
 For request specification, please look [here](http://docs.identityserver.io/en/aspnetcore1/endpoints/authorize.html).
 
-##### Method 
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/authorize?client_id=example_client&scope=openid%20GluwaApi&response_type=code&redirect_uri=https://redirect-after-login.com&state=abcd \
+-X GET
+```
+
+### Method 
 
 | Method | URL                                      |
 |--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize?</code> |
+| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize</code> |
 
-##### Parameters
+### Parameters
 
 | Name          | Type/Value                   | Required | Path/Query | Description                              |
 |---------------|------------------------------|----------|------------|------------------------------------------|
-| client_id     | String  | yes      | Query      | Identifier of the client                 |
-| scope         | String  | yes      | Quey       | One or more registered scopes.           |
-| redirect_uri  | String  | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
-| response_type | Code    | yes      | Query      |Requests an authorization code       |
-| state | String    | no      | Query      |identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection.   |
+| `client_id`     | String  | yes      | Query      | Identifier of the client                 |
+| `scope`         | String  | yes      | Quey       | One or more registered scopes.           |
+| `redirect_uri`  | String  | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
+| `response_type` | Code    | yes      | Query      |Requests an authorization code       |
+| `state` | String    | no      | Query      |identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection.   |
 
-##### Request URL Example
-```
-https://auth.gluwa.com/connect/authorize?client_id=example_client&scope=openid%20GluwaApi&response_type=code&redirect_uri=https://redirect-after-login.com&state=abcd
-```
-While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For exmaple, `Guid` can work.
+While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For example, `GUID` can work.
 
 *Note: The allowed scope parameter may vary from client to client. Please ask the administrator your client is allowed to request.*
 
-#### Step 2. Redirect the user to the URL in step 1
+### Step 2. Redirect the user to the URL in step 1
 
 When users click the `login` button on your app, redirect them to the URL formed in Step 1.
 
 Before the redirect, you will need to persist `state` externally, typically using a browser cookie. This is due to the Auth server giving you back this value when it calls your `redirect_uri` as a query string, just after users login and give your app consent.
 
-#### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
+### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
 
 Two query parameters will be sent to your `redirect_uri`:
 
 | Name          | Type/Value | Required | Path/Query | Description                    |
 |---------------|------------|----------|------------|--------------------------------|
-| scope         | String     | yes      | Quey       | One or more registered scopes. |
-| response_type | Code       | yes      | Query      | Requests an authorization code |
+| `scope`         | String     | yes      | Quey       | One or more registered scopes. |
+| `response_type` | Code       | yes      | Query      | Requests an authorization code |
 
 You need to validate the `state` that was given back by the Auth server with the one you have persisted in step 2. 
 
@@ -217,63 +195,62 @@ After the validation, you can remove the persisted state.
 
 For any error responses, check the OpenID Connect [Authentication Error Response](http://openid.net/specs/openid-connect-core-1_0.html#AuthError).
 
-#### Step 4. Use code to obtain ID Token and the Access Token
+### Step 4. Use code to obtain ID Token and the Access Token
 
 Using the code obtained at step 3, you can now request ID Token and Access Token.
 
-#### Request
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/token \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'grant_type=authorization_code&code=<your_authorization_code>&client_id=<your_client_id>&client_secret=<your_client_secret>&redirect_uri=<your_redirect_uri_used_in_1>'
+```
+
+> Response
+
+```json
+{
+    "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA3OTQ1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOiJtdmMiLCJpYXQiOjE1MTAwNzkxNTgsImF0X2hhc2giOiJyTHhBUmdqeDhnSjg0TG8tZHh5NHd3Iiwic2lkIjoiYTA4Nzg3ZWFhNjU2OTFmNDQ4YTI0YmVhZjRjNWFkYmYiLCJzdWIiOiJjMGQxOGMyNy1iMGNkLTQ0MjgtOWEwYi05N2MyNjBjYmFjM2MiLCJhdXRoX3RpbWUiOjE1MTAwNzkxNTcsImlkcCI6ImxvY2FsIiwiYW1yIjpbInB3ZCJdfQ.HzDzwnx0sI2WJ5mo8OtiXkUP2pLIfrIZhiKVElVTc5M9WE0SaO8Xnr4WzwltEIQNcDtYkn4-rkLp1AKRk6Xf1RvAiIzKbTtz9YrReZPkXvyIerJIkRmF0agD-z-JSHF7HZ2NqKAxrQHHMwRrlvMrBIUd2pDhjzd2A0kVsqRTQvmXWUqsv5Ig_h6-OMYSyUYkNNEkEG8kPB2qmd3VcRy1jLGL8hrpnAu8mRoYZuxycBepmCvHnWbV0_3cWlNZQmSg8U-tYgdHQVkL5ees9j2SVhw4-YbQY7BXebuWTTPET8IzXZsAagHUnOk7cq6KhMV_sw6QTpiyTChYtW7NQkzGnQ",
+    "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA4Mjc1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgvcmVzb3VyY2VzIiwiR2x1d2FBcGkiXSwiY2xpZW50X2lkIjoibXZjIiwic3ViIjoiYzBkMThjMjctYjBjZC00NDI4LTlhMGItOTdjMjYwY2JhYzNjIiwiYXV0aF90aW1lIjoxNTEwMDc5MTU3LCJpZHAiOiJsb2NhbCIsImNvdW50cnkiOiJLUiIsInVzZXJuYW1lIjoiY2hyaXMueW9vbi50ZXN0IiwiZW1haWwiOiJjaHJpcy55b29uQGdsdXdhLmNvbSIsInBob25lX251bWJlciI6IisxNzc4Mzg3MTYxMCIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6InRydWUiLCJzY29wZSI6WyJvcGVuaWQiLCJHbHV3YUFwaSJdLCJhbXIiOlsicHdkIl19.RNrG6nHHlQtFuT3MaA7c7NceBBxUFvhfdYxqKJXSsB-1SkwWvFP-GJyV5n3Wdf7PtZmGmDO8QHTSuYMCsq-ZbBYZLhi5emBU1L42kjRT-3JXTjVmCHS3ED2z5sM6L2QOmDhZjkGRxXkRMQbVp6QJrUueVnez_txAGEX8jkIw7Zi56TBlLV0FFUXXoBvxIebzIv4ChbtN99ll9u3gnzGacsIbWzUt23yKBgTKnQTJ1AkngaNgk1Odz7cRAegH6d9m4IiZo8yUrGbMax0N7lEkWrWkbC3L_29IntUu6K54NTBoW5ukSaY06zLB5jGTeVvMronNqQyplXbdHruw87bViQ",
+    "expires_in": 3600,
+    "token_type": "Bearer"
+}
+```
+
+> Note that the `access_token` and `id_token` is in JWT format. 
+> To make a request to Gluwa's public API, use the `access_token` and attach it into Authorization header as Bearer scheme.
+
+### Request
 
 
 | Method | URL                    | HOST           | Content-Type                      |
 |--------|------------------------|----------------|-----------------------------------|
-| POST   | connect/token HTTP/1.1 | auth.gluwa.com | application/x-www-form-urlencoded |
-
-#### Request Example
-```
-grant_type=authorization_code&code=<your_authorization_code>&client_id=<your_client_id>&client_secret=<your_client_secret>&redirect_uri=<your_redirect_uri_used_in_1>
-```
+| POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded |
 
 **Make sure that the requests to the auth server are always using HTTPS.**
 
-#### Response
 
-```
-{
-
-\"id\_token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA3OTQ1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOiJtdmMiLCJpYXQiOjE1MTAwNzkxNTgsImF0X2hhc2giOiJyTHhBUmdqeDhnSjg0TG8tZHh5NHd3Iiwic2lkIjoiYTA4Nzg3ZWFhNjU2OTFmNDQ4YTI0YmVhZjRjNWFkYmYiLCJzdWIiOiJjMGQxOGMyNy1iMGNkLTQ0MjgtOWEwYi05N2MyNjBjYmFjM2MiLCJhdXRoX3RpbWUiOjE1MTAwNzkxNTcsImlkcCI6ImxvY2FsIiwiYW1yIjpbInB3ZCJdfQ.HzDzwnx0sI2WJ5mo8OtiXkUP2pLIfrIZhiKVElVTc5M9WE0SaO8Xnr4WzwltEIQNcDtYkn4-rkLp1AKRk6Xf1RvAiIzKbTtz9YrReZPkXvyIerJIkRmF0agD-z-JSHF7HZ2NqKAxrQHHMwRrlvMrBIUd2pDhjzd2A0kVsqRTQvmXWUqsv5Ig\_h6-OMYSyUYkNNEkEG8kPB2qmd3VcRy1jLGL8hrpnAu8mRoYZuxycBepmCvHnWbV0\_3cWlNZQmSg8U-tYgdHQVkL5ees9j2SVhw4-YbQY7BXebuWTTPET8IzXZsAagHUnOk7cq6KhMV\_sw6QTpiyTChYtW7NQkzGnQ\",
-
-\"access\_token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA4Mjc1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgvcmVzb3VyY2VzIiwiR2x1d2FBcGkiXSwiY2xpZW50X2lkIjoibXZjIiwic3ViIjoiYzBkMThjMjctYjBjZC00NDI4LTlhMGItOTdjMjYwY2JhYzNjIiwiYXV0aF90aW1lIjoxNTEwMDc5MTU3LCJpZHAiOiJsb2NhbCIsImNvdW50cnkiOiJLUiIsInVzZXJuYW1lIjoiY2hyaXMueW9vbi50ZXN0IiwiZW1haWwiOiJjaHJpcy55b29uQGdsdXdhLmNvbSIsInBob25lX251bWJlciI6IisxNzc4Mzg3MTYxMCIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6InRydWUiLCJzY29wZSI6WyJvcGVuaWQiLCJHbHV3YUFwaSJdLCJhbXIiOlsicHdkIl19.RNrG6nHHlQtFuT3MaA7c7NceBBxUFvhfdYxqKJXSsB-1SkwWvFP-GJyV5n3Wdf7PtZmGmDO8QHTSuYMCsq-ZbBYZLhi5emBU1L42kjRT-3JXTjVmCHS3ED2z5sM6L2QOmDhZjkGRxXkRMQbVp6QJrUueVnez\_txAGEX8jkIw7Zi56TBlLV0FFUXXoBvxIebzIv4ChbtN99ll9u3gnzGacsIbWzUt23yKBgTKnQTJ1AkngaNgk1Odz7cRAegH6d9m4IiZo8yUrGbMax0N7lEkWrWkbC3L\_29IntUu6K54NTBoW5ukSaY06zLB5jGTeVvMronNqQyplXbdHruw87bViQ\",
-
-\"expires\_in\":3600,
-
-\"token\_type\":\"Bearer\"
-
-}
-```
-
-Note that the `access_token` and `id_token` is in JWT format. 
-
-To make a request to Gluwa's public API, use the `access_token` and attach it into Authorization header as Bearer scheme.
-
-#### Step 5. Validate ID token and Access Token
+### Step 5. Validate ID token and Access Token
 
 Before using the ID Token and Access Token, client must validate the tokens as laid out in [OpenID Connect Core 1.0, section 3.1.3.7 and 3.1.3.8](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation).
 
 It is up to the client how to validate the tokens, which is outside the scope of this document.
 
-#### Step 6. Sign in to your app
+### Step 6. Sign in to your app
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
 
 This is client-side implementation.
 
-### Implicit flow
+## Implicit flow
 
 This flow is mainly used by Clients implemented in a browser using a scripting language such as JavaScript or SPA. Since the client using this flow is public (meaning that the source code is available through a browser), you cannot have a `client_secret` with this flow.
 
 For this flow, you can use the guide shown [here](http://docs.identityserver.io/en/aspnetcore1/quickstarts/7_javascript_client.html#reference-oidc-client), as there is a handy javascript library called [oidc-client-js](https://github.com/IdentityModel/oidc-client-js) made by the IdentityServer team. The guide assumes you are using Visual Studio on Windows environment, but since this flow should be used for front-end apps, it should work on any platform.
 
-### Hybrid flow
+## Hybrid flow
 
 The Hybrid flow takes the best of Authorization code flow and Implicit flow together. For implicit flow, all tokens are transmitted through a browser. This may be okay for `ID Token`, but `Access Token` is too sensitive to be transmitted via front end. 
 
@@ -281,26 +258,31 @@ Hybrid flow adds a layer of security. The `identity token` is transmitted via th
 
 The steps for this flow is similar to Authorization Code flow, with a few differences. For more details on the spec, see [here](http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth).
 
-#### Step 1. Prepare a request to Authorize Endpoint
+### Step 1. Prepare a request to Authorize Endpoint
 
-##### Method 
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/authorize?client_id=example_client&scope=openid%20GluwaApi&response_type=code%20id_token&redirect_uri=https://redirect-after-login.com&state=abcd&nonce=1234 \
+-X GET
+```
+
+### Method 
 
 | Method | URL                                      |
 |--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize?</code> |
+| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize</code> |
 
-##### Parameters
-
+### Parameters
 
 | Name          | Type/Value                               | Required | Path/Query | Description                              |
 |---------------|------------------------------------------|----------|------------|------------------------------------------|
-| client_id     | String                                   | yes      | Query      | Identifier of the client                 |
-| scope         | String                                   | yes      | Quey       | One or more registered scopes.           |
-| redirect_uri  | String                                   | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
-| response_type | code token, code id_token | yes      | Query      | Requests an authorization code           |
-| state         | String                                   | no       | Query      | identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection. |
-| nonce         |  String                            |no          |Query          |  Nonce is a string value that is associated with the client session to mitigate replay attacks. Where as state only provides a way to bind the client's request and the response from auth server together, nonce provides a way for the client to determine if the token is actually generated for the client by the auth server.                                        |
-
+| `client_id`     | String                                   | yes      | Query      | Identifier of the client                 |
+| `scope`         | String                                   | yes      | Quey       | One or more registered scopes.           |
+| `redirect_uri`  | String                                   | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
+| `response_type` | code token, code id_token | yes      | Query      | Requests an authorization code           |
+| `state`         | String                                   | no       | Query      | identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection. |
+| `nonce`         |  String                            |no          |Query          |  Nonce is a string value that is associated with the client session to mitigate replay attacks. Where as state only provides a way to bind the client's request and the response from auth server together, nonce provides a way for the client to determine if the token is actually generated for the client by the auth server.                                        |
 
 While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For exmaple, `Guid` can work.
 
@@ -308,19 +290,20 @@ While the `state` parameter is not necessary, it is recommended. The value needs
 
 When `nonce` is present in the authorize request, the auth server will include nonce as one of the properties of the id token. The client MUST verify that the nonce in the id token is the same as the nonce it passed in to the authorize request.
 
-##### Example Request
-
-```
-https://auth.gluwa.com/connect/authorize?client_id=exampl_client&scope=openid%20GluwaApi&response_type=code%20id_token&redirect_uri=https://redirect-after-login.com&state=abcd&nonce=1234
-```
-
-#### Step 2. Redirect the user to the endpoint in step 1
+### Step 2. Redirect the user to the endpoint in step 1
 
 When users click the `login` button on your app, redirect them to the URL formed in Step 1.
 
 Before the redirect, you will need to persist `state` externally, typically using a browser cookie. This is due to the Auth server giving you back this value when it calls your `redirect_uri` as a query string, just after users login and give your app consent.
 
-#### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
+### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
+
+> Example request
+
+```shell
+curl https://redirect-after-login.com/#code=12365sdfsdf445&id_token=sdlfiqlk1231568654&scope=openid%20GluwaApi&state=abcd&session_state=sdfio23123 \
+-X GET
+```
 
 In hybrid flow all response parameters are added to the fragment component (component after `#` in the URL of the `redirect_uri` Fragment parameters will depend on what you've put as `response_type` in step 1. Following the example given in step 1, the query parameters will be:
 
@@ -330,24 +313,28 @@ In hybrid flow all response parameters are added to the fragment component (comp
 
 (since we only requested for code and `id_token` )
 
-##### Example Request
-```
-https://redirect-after-login.com/#code=12365sdfsdf445&id_token=sdlfiqlk1231568654&scope=openid%20GluwaApi&state=abcd&session_state=sdfio23123
-```
-
 `id_token` must be validated before usage as shown in the next step (step 4). After the validation is successful, you can use the code to obtain `access_token` through the token endpoint as shown in step 4 of Authorization Code flow.
 
 Remembe to validate the state field as well.
 
-#### Step 4. Validate ID token and Access Token
+### Step 4. Validate ID token and Access Token
 
 Before using the ID Token and Access Token, client must validate the tokens as laid out in [OpenID Connect Core 1.0, section 3.1.3.7 and 3.1.3.8](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation). It is up to the client how to validate the tokens, which is outside the scope of this document.
 
-#### 5. Sign in to your app
+### 5. Sign in to your app
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
 
-### Client Credentials As User
+## Client Credentials As User
+
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/token \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'client_id={client_id}&client_secret={client_secret}&scope={scopes}&grant_type=client_credentials_as_user'
+```
 
 This flow is used for users who would like to use our API with their client credentials (log in using client id and secret). We assign the user's Gluwa account to a specific client, and the user will be able to login to that account using client id and secret.
 
@@ -355,15 +342,10 @@ You can send the request to the auth server as follows:
 
 | Method | URL                    | Host           | Content-Type | Cache Control |
 |--------|------------------------|----------------|--------------|---------------|
-| POST   | connect/token HTTP/1.1 | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
+| POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
 
 
-#### Request Example
-```
-client\_id={client\_id}&client\_secret={client\_secret}&scope={scopes}&grant\_type=client\_credentials\_as\_user
-```
-
-### Logging out
+## Logging out
 
 Logout from your own client, not the Gluwa Auth server. 
 
@@ -371,23 +353,26 @@ Should you really want to logout from both your own client and on Gluwa Auth ser
 
 **Note that if you do decide to use these endpoints, you are logging the user out completely from Gluwa Auth system, meaning that they will also be logged out of other clients that may not be in your control.**
 
-### Revocation endpoint
+## Revocation endpoint
+
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/revocation \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'token=<your_refresh_token>&token_type_hint=refresh_token&client_id=<your_client_id>&client_secret=<your_client_secret>'
+```
 
 You can revoke token by:
 
-
 | Method | URL                         | Host           | Content-Type                      |
 |--------|-----------------------------|----------------|-----------------------------------|
-| POST   | connect/revocation HTTP/1.1 | auth.gluwa.com | application/x-www-form-urlencoded |
+| POST   | connect/revocation | auth.gluwa.com | application/x-www-form-urlencoded |
 
-
-#### Request Example
-```
-token=<your_refresh_token>&token_type_hint=refresh_token&client_id=<your_client_id>&client_secret=<your_client_secret>
-```
 You cannot revoke access token. Access token lifetime is set to 1 hour.
 
-### End Session Endpoint
+## End Session Endpoint
 
 | Method | URL      |
 |--------|----------|
@@ -398,7 +383,7 @@ For the details of each query parameter, please click [here](http://docs.identit
 
 Again, if state is provided, the auth server will give this back in your `post_redirect_uri` so you can validate the state after redirection.
 
-### Session management
+## Session management
 
 The documentation for session status detection can be found [here](http://openid.net/specs/openid-connect-session-1_0.html#ChangeNotification). 
 
