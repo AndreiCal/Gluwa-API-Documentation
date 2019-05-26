@@ -423,13 +423,14 @@ Get the list of banks supported by Gluwa.
 ### Responses
 
 > Successful Response (200)
+
 ```json
 [
-{
-"InstitutionCode": "string",
-"DisplayName": "string",
-"LogoImageUrl": "string"
-}
+    {
+        "InstitutionCode": "string",
+        "DisplayName": "string",
+        "LogoImageUrl": "string"
+        }
 ]
 ```
 
@@ -437,18 +438,19 @@ Get the list of banks supported by Gluwa.
 
 ```json
 {
-"InnerErrors": [
-{
-"Code": "string",
-"Path": "string",
-"Message": "string"
-}
-],
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
+    "InnerErrors": [
+        {
+            "Code": "string",
+            "Path": "string",
+            "Message": "string"
+        }
+    ],
+    "Code": "string",
+    "Message": "string",
+    "ExtraData": "string"
 }
 ```
+
 Response Codes
 
 | Code | Type/Value                        | Description                            |
@@ -483,11 +485,11 @@ Search through the list of banks by keyword.
 
 ```json
 [
-{
-"InstitutionCode": "string",
-"DisplayName": "string",
-"LogoImageUrl": "string"
-}
+    {
+        "InstitutionCode": "string",
+        "DisplayName": "string",
+        "LogoImageUrl": "string"
+    }
 ]
 ```
 
@@ -495,18 +497,19 @@ Search through the list of banks by keyword.
 
 ```json
 {
-"InnerErrors": [
-{
-"Code": "string",
-"Path": "string",
-"Message": "string"
-}
-],
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
+    "InnerErrors": [
+        {
+            "Code": "string",
+            "Path": "string",
+            "Message": "string"
+        }
+    ],
+    "Code": "string",
+    "Message": "string",
+    "ExtraData": "string"
 }
 ```
+
 Response Codes
 
 | Code | Type/Value                        | Description                            |
