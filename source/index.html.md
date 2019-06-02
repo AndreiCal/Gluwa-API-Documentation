@@ -15,7 +15,6 @@ search: true
 ---
 # Gluwa API Documentation
 **Table of Contents**
-<!-- Start Document Outline -->
 
 * [Gluwa Overview](#gluwa-overview)
 * [Getting Started with Gluwa API](#getting-started-with-gluwa-api)
@@ -57,12 +56,11 @@ search: true
 	* [Create or update webhook URL and secret](#create-or-update-webhook-url-and-secret)
 	* [Generate QR code for transaction request](#generate-qr-code-for-transaction-request)
 
-<!-- End Document Outline -->
 # Gluwa Overview
 
-Gluwa is a fiat-pegged cryptocurrency wallet that provides *Bitcoin?* deposit and withdrawal. The Gluwa wallet enables users to process national and international transactions, allowing for secure management of money, credit and identity.
+Gluwa is a fiat-pegged cryptocurrency wallet that provides *Bitcoin* deposit and withdrawal. The Gluwa wallet enables users to process national and international transactions, allowing for secure management of money.
+Through Gluwa's public-facing REST API, users can:
 
-Through Gluwa's public-facing REST API, users can
 * Get information about supported Banks
 * Manage funding sources
 * Manage transactions
@@ -71,39 +69,27 @@ Through Gluwa's public-facing REST API, users can
 
 # Getting Started with Gluwa API
 
+## Get an Access Token from Auth API
 
-## Auth API and Gluwa API
+> Example request
 
-### Get an Access Token from Auth API
-In order to obtain an access token using the below method, you need a Client ID, Client Secret, Username and Password.
-
-In this example, we’ll use the following information:
-* **Client ID:** `8a1c2424-fe73-473a-828f-fb848a3c2cc9`
-* **Client Secret:** `Testing123!`
-* **Username:** `gTester1`
-* **Password:** `V0Jkw0nZnz`
-
-An access token will be returned when posting to the below URL with a body containing the following:
-
-#### Method
-| Method | URL                                      |
-|--------|------------------------------------------|
-| POST    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/token</code> |
-
-#### Header
-| Header | URL                                      |
-|--------|------------------------------------------|
-| Content-Type   | <code class="highlighter-rouge">application/x-www-form-urlencoded</code> |
-
-
-#### Request Body
-```json 
-client_id=8a1c2424-fe73-473a-828f-fb848a3c2cc9&client_secret=Testing123!&grant_type=password&username=gTester1&password=V0Jkw0nZnz&scope=wallet.read transaction.read
+```shell
+curl https://auth.gluwa.com/connect/token \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d '{
+    "client_id": "8a1c2424-fe73-473a-828f-fb848a3c2cc9",
+    "client_secret": "Testing123!",
+    "grant_type: "password",
+    "username": "gTester1",
+    "password": "V0Jkw0nZnz",
+    "scope": "wallet.read transaction.read"
+}'
 ```
 
-#### Response Token
+> Response Token
 
-```json 
+```json
 {
 "access_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6IkQyOEJENjcwOTI5QTBDN0U5MTMyRkE4NDgwRUMwNDlDMDBFRTIxQkYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiIwb3ZXY0pLYURINlJNdnFFZ093RW5BRHVJYjgifQ.eyJuYmYiOjE1NTcwMjgyNTgsImV4cCI6MTU1NzAzMTg1OCwiaXNzIjoiaHR0cHM6Ly9hdXRoLmdsdXdhLmNvbSIsImF1ZCI6WyJodHRwczovL2F1dGguZ2x1d2EuY29tL3Jlc291cmNlcyIsIkdsdXdhQXBpIl0sImNsaWVudF9pZCI6IjhhMWMyNDI0LWZlNzMtNDczYS04MjhmLWZiODQ4YTNjMmNjOSIsInN1YiI6ImE2MDkxN2Q5LTRlNWQtNGE0Yi04MGZjLTEwY2FmYmM3MWYzOSIsImF1dGhfdGltZSI6MTU1NzAyODI1OCwiaWRwIjoibG9jYWwiLCJJc1Rlc3RVc2VyIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV9udW1iZXJfdmVyaWZpZWQiOnRydWUsInNjb3BlIjpbInRyYW5zYWN0aW9uLnJlYWQiLCJ3YWxsZXQucmVhZCJdLCJhbXIiOlsicHdkIl19.gEK1SnM-FKyFR_rvF4WqI5zbwMfRI9lbJIh93wYvMruOzhtkv1m6m2VbwNGQEaxoNHuPNCbcuxXUa6I4TZXnKwMvSWAxXBXC9WoVU9cbtT4Q2nm8Y9-EfkUCOncaYX_ERbDetGjN4joiOyPAjRluKDBU491_uh66DHmAWGsP8o_JFI7tOk8yGKI2p8SUlvP_Y2YcfviAyjkhUOcFEuzTT1laB10CcrXMjUQyygiSU_HGHcskGcndig9HHSdI55LDNOgoCe_111U2AsPmZDzKPMRJ2RfFP3Y2AHB3lmDZvEILvuvJBcHtBEoEhRgZt5vk1arEC0o0cNmC42LBc1uFEQ",
 "expires_in":3600,
@@ -111,82 +97,96 @@ client_id=8a1c2424-fe73-473a-828f-fb848a3c2cc9&client_secret=Testing123!&grant_t
 }
 ```
 
-### Get Wallet Details
-In order to get details for a Wallet, use the access token retrieve earlier in the header of the request.
+In order to obtain an access token using the below method, you need a Client ID, Client Secret, Username and Password.
 
-#### Method
+In this example, we’ll use the following information:
+
+* **Client ID:** `8a1c2424-fe73-473a-828f-fb848a3c2cc9`
+* **Client Secret:** `Testing123!`
+* **Username:** `gTester1`
+* **Password:** `V0Jkw0nZnz`
+
+An access token will be returned when posting to the below URL with a body containing the following:
+
+### Method
+
 | Method | URL                                      |
 |--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">https://api.gluwa.com/V4.1/Wallets</code> |
+| POST    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/token</code> |
 
-#### Header
+### Header
+
 | Header | URL                                      |
 |--------|------------------------------------------|
-| Authorization   | Bearer <code class="highlighter-rouge">{access_token}</code> |
+| Content-Type   | <code class="highlighter-rouge">application/x-www-form-urlencoded</code> |
 
-#### Response
 
-```json
-{
-"ID":"61b04bb0-70fc-464c-9c7e-ab56dbdc3366",
-"Balance":"4994501",
-"Country":"KR",
-"Currency":"KRW",
-"Status":"Active"
-}
-```
+### Request Body
 
-## OpenID Connect
+| Name                    | Type/Value | Required | Description                              |
+|----------------------|--------------|----------|------------|------------------------------------------|
+| `client_id`          | String        | yes            | Identifier of the client                 |
+| `client_secret`  | String        | yes | Secret key of the client |
+| `grant_type`        | String        | yes | Type of the grant |
+| `username`            | String        | yes | Username of the client |
+| `password`            | String        | yes | Password of the client |
+| `scope`                  | String        | yes | One or more registered scopes.           |
+
+
+# OpenID Connect
 Gluwa Auth server uses IdentityServer4 to authenticate/authorize its users. It strictly follows the specification laid out in [OpenID Connect Core 1.0](http://openid.net/specs/openid-connect-core-1_0.html).
 
-### Authorization Code flow
+## Authorization Code flow
 
 This flow is suitable for Clients that can maintain a Client Secret between themselves and the Authorization Server. For example, clients that have a backend server to keep the client secret safe.
 
 For details of the spec, please see [here](http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth). Note that not all OpenID connect features may be supported.
 
-#### Step 1. Prepare a request to Authorize Endpoint.
+### Step 1. Prepare a request to Authorize Endpoint.
 
 For request specification, please look [here](http://docs.identityserver.io/en/aspnetcore1/endpoints/authorize.html).
 
-##### Method 
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/authorize?client_id=example_client&scope=openid%20GluwaApi&response_type=code&redirect_uri=https://redirect-after-login.com&state=abcd \
+-X GET
+```
+
+### Method 
 
 | Method | URL                                      |
 |--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize?</code> |
+| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize</code> |
 
-##### Parameters
+### Parameters
 
 | Name          | Type/Value                   | Required | Path/Query | Description                              |
 |---------------|------------------------------|----------|------------|------------------------------------------|
-| client_id     | String  | yes      | Query      | Identifier of the client                 |
-| scope         | String  | yes      | Quey       | One or more registered scopes.           |
-| redirect_uri  | String  | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
-| response_type | Code    | yes      | Query      |Requests an authorization code       |
-| state | String    | no      | Query      |identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection.   |
+| `client_id`     | String  | yes      | Query      | Identifier of the client                 |
+| `scope`         | String  | yes      | Quey       | One or more registered scopes.           |
+| `redirect_uri`  | String  | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
+| `response_type` | Code    | yes      | Query      |Requests an authorization code       |
+| `state` | String    | no      | Query      |identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection.   |
 
-##### Request URL Example
-```
-https://auth.gluwa.com/connect/authorize?client_id=example_client&scope=openid%20GluwaApi&response_type=code&redirect_uri=https://redirect-after-login.com&state=abcd
-```
-While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For exmaple, `Guid` can work.
+While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For example, `GUID` can work.
 
 *Note: The allowed scope parameter may vary from client to client. Please ask the administrator your client is allowed to request.*
 
-#### Step 2. Redirect the user to the URL in step 1
+### Step 2. Redirect the user to the URL in step 1
 
 When users click the `login` button on your app, redirect them to the URL formed in Step 1.
 
 Before the redirect, you will need to persist `state` externally, typically using a browser cookie. This is due to the Auth server giving you back this value when it calls your `redirect_uri` as a query string, just after users login and give your app consent.
 
-#### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
+### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
 
 Two query parameters will be sent to your `redirect_uri`:
 
 | Name          | Type/Value | Required | Path/Query | Description                    |
 |---------------|------------|----------|------------|--------------------------------|
-| scope         | String     | yes      | Quey       | One or more registered scopes. |
-| response_type | Code       | yes      | Query      | Requests an authorization code |
+| `scope`         | String     | yes      | Quey       | One or more registered scopes. |
+| `response_type` | Code       | yes      | Query      | Requests an authorization code |
 
 You need to validate the `state` that was given back by the Auth server with the one you have persisted in step 2. 
 
@@ -194,63 +194,62 @@ After the validation, you can remove the persisted state.
 
 For any error responses, check the OpenID Connect [Authentication Error Response](http://openid.net/specs/openid-connect-core-1_0.html#AuthError).
 
-#### Step 4. Use code to obtain ID Token and the Access Token
+### Step 4. Use code to obtain ID Token and the Access Token
 
 Using the code obtained at step 3, you can now request ID Token and Access Token.
 
-#### Request
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/token \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'grant_type=authorization_code&code=<your_authorization_code>&client_id=<your_client_id>&client_secret=<your_client_secret>&redirect_uri=<your_redirect_uri_used_in_1>'
+```
+
+> Response
+
+```json
+{
+    "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA3OTQ1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOiJtdmMiLCJpYXQiOjE1MTAwNzkxNTgsImF0X2hhc2giOiJyTHhBUmdqeDhnSjg0TG8tZHh5NHd3Iiwic2lkIjoiYTA4Nzg3ZWFhNjU2OTFmNDQ4YTI0YmVhZjRjNWFkYmYiLCJzdWIiOiJjMGQxOGMyNy1iMGNkLTQ0MjgtOWEwYi05N2MyNjBjYmFjM2MiLCJhdXRoX3RpbWUiOjE1MTAwNzkxNTcsImlkcCI6ImxvY2FsIiwiYW1yIjpbInB3ZCJdfQ.HzDzwnx0sI2WJ5mo8OtiXkUP2pLIfrIZhiKVElVTc5M9WE0SaO8Xnr4WzwltEIQNcDtYkn4-rkLp1AKRk6Xf1RvAiIzKbTtz9YrReZPkXvyIerJIkRmF0agD-z-JSHF7HZ2NqKAxrQHHMwRrlvMrBIUd2pDhjzd2A0kVsqRTQvmXWUqsv5Ig_h6-OMYSyUYkNNEkEG8kPB2qmd3VcRy1jLGL8hrpnAu8mRoYZuxycBepmCvHnWbV0_3cWlNZQmSg8U-tYgdHQVkL5ees9j2SVhw4-YbQY7BXebuWTTPET8IzXZsAagHUnOk7cq6KhMV_sw6QTpiyTChYtW7NQkzGnQ",
+    "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA4Mjc1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgvcmVzb3VyY2VzIiwiR2x1d2FBcGkiXSwiY2xpZW50X2lkIjoibXZjIiwic3ViIjoiYzBkMThjMjctYjBjZC00NDI4LTlhMGItOTdjMjYwY2JhYzNjIiwiYXV0aF90aW1lIjoxNTEwMDc5MTU3LCJpZHAiOiJsb2NhbCIsImNvdW50cnkiOiJLUiIsInVzZXJuYW1lIjoiY2hyaXMueW9vbi50ZXN0IiwiZW1haWwiOiJjaHJpcy55b29uQGdsdXdhLmNvbSIsInBob25lX251bWJlciI6IisxNzc4Mzg3MTYxMCIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6InRydWUiLCJzY29wZSI6WyJvcGVuaWQiLCJHbHV3YUFwaSJdLCJhbXIiOlsicHdkIl19.RNrG6nHHlQtFuT3MaA7c7NceBBxUFvhfdYxqKJXSsB-1SkwWvFP-GJyV5n3Wdf7PtZmGmDO8QHTSuYMCsq-ZbBYZLhi5emBU1L42kjRT-3JXTjVmCHS3ED2z5sM6L2QOmDhZjkGRxXkRMQbVp6QJrUueVnez_txAGEX8jkIw7Zi56TBlLV0FFUXXoBvxIebzIv4ChbtN99ll9u3gnzGacsIbWzUt23yKBgTKnQTJ1AkngaNgk1Odz7cRAegH6d9m4IiZo8yUrGbMax0N7lEkWrWkbC3L_29IntUu6K54NTBoW5ukSaY06zLB5jGTeVvMronNqQyplXbdHruw87bViQ",
+    "expires_in": 3600,
+    "token_type": "Bearer"
+}
+```
+
+> Note that the `access_token` and `id_token` is in JWT format. 
+> To make a request to Gluwa's public API, use the `access_token` and attach it into Authorization header as Bearer scheme.
+
+### Request
 
 
 | Method | URL                    | HOST           | Content-Type                      |
 |--------|------------------------|----------------|-----------------------------------|
-| POST   | connect/token HTTP/1.1 | auth.gluwa.com | application/x-www-form-urlencoded |
-
-#### Request Example
-```
-grant_type=authorization_code&code=<your_authorization_code>&client_id=<your_client_id>&client_secret=<your_client_secret>&redirect_uri=<your_redirect_uri_used_in_1>
-```
+| POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded |
 
 **Make sure that the requests to the auth server are always using HTTPS.**
 
-#### Response
 
-```
-{
-
-\"id\_token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA3OTQ1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOiJtdmMiLCJpYXQiOjE1MTAwNzkxNTgsImF0X2hhc2giOiJyTHhBUmdqeDhnSjg0TG8tZHh5NHd3Iiwic2lkIjoiYTA4Nzg3ZWFhNjU2OTFmNDQ4YTI0YmVhZjRjNWFkYmYiLCJzdWIiOiJjMGQxOGMyNy1iMGNkLTQ0MjgtOWEwYi05N2MyNjBjYmFjM2MiLCJhdXRoX3RpbWUiOjE1MTAwNzkxNTcsImlkcCI6ImxvY2FsIiwiYW1yIjpbInB3ZCJdfQ.HzDzwnx0sI2WJ5mo8OtiXkUP2pLIfrIZhiKVElVTc5M9WE0SaO8Xnr4WzwltEIQNcDtYkn4-rkLp1AKRk6Xf1RvAiIzKbTtz9YrReZPkXvyIerJIkRmF0agD-z-JSHF7HZ2NqKAxrQHHMwRrlvMrBIUd2pDhjzd2A0kVsqRTQvmXWUqsv5Ig\_h6-OMYSyUYkNNEkEG8kPB2qmd3VcRy1jLGL8hrpnAu8mRoYZuxycBepmCvHnWbV0\_3cWlNZQmSg8U-tYgdHQVkL5ees9j2SVhw4-YbQY7BXebuWTTPET8IzXZsAagHUnOk7cq6KhMV\_sw6QTpiyTChYtW7NQkzGnQ\",
-
-\"access\_token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhOTEyMWM1ZWI2OGEwNjM5ODYzMjI1YmI1ZTRkYjUyIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1MTAwNzkxNTgsImV4cCI6MTUxMDA4Mjc1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzOTgvcmVzb3VyY2VzIiwiR2x1d2FBcGkiXSwiY2xpZW50X2lkIjoibXZjIiwic3ViIjoiYzBkMThjMjctYjBjZC00NDI4LTlhMGItOTdjMjYwY2JhYzNjIiwiYXV0aF90aW1lIjoxNTEwMDc5MTU3LCJpZHAiOiJsb2NhbCIsImNvdW50cnkiOiJLUiIsInVzZXJuYW1lIjoiY2hyaXMueW9vbi50ZXN0IiwiZW1haWwiOiJjaHJpcy55b29uQGdsdXdhLmNvbSIsInBob25lX251bWJlciI6IisxNzc4Mzg3MTYxMCIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6InRydWUiLCJzY29wZSI6WyJvcGVuaWQiLCJHbHV3YUFwaSJdLCJhbXIiOlsicHdkIl19.RNrG6nHHlQtFuT3MaA7c7NceBBxUFvhfdYxqKJXSsB-1SkwWvFP-GJyV5n3Wdf7PtZmGmDO8QHTSuYMCsq-ZbBYZLhi5emBU1L42kjRT-3JXTjVmCHS3ED2z5sM6L2QOmDhZjkGRxXkRMQbVp6QJrUueVnez\_txAGEX8jkIw7Zi56TBlLV0FFUXXoBvxIebzIv4ChbtN99ll9u3gnzGacsIbWzUt23yKBgTKnQTJ1AkngaNgk1Odz7cRAegH6d9m4IiZo8yUrGbMax0N7lEkWrWkbC3L\_29IntUu6K54NTBoW5ukSaY06zLB5jGTeVvMronNqQyplXbdHruw87bViQ\",
-
-\"expires\_in\":3600,
-
-\"token\_type\":\"Bearer\"
-
-}
-```
-
-Note that the `access_token` and `id_token` is in JWT format. 
-
-To make a request to Gluwa's public API, use the `access_token` and attach it into Authorization header as Bearer scheme.
-
-#### Step 5. Validate ID token and Access Token
+### Step 5. Validate ID token and Access Token
 
 Before using the ID Token and Access Token, client must validate the tokens as laid out in [OpenID Connect Core 1.0, section 3.1.3.7 and 3.1.3.8](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation).
 
 It is up to the client how to validate the tokens, which is outside the scope of this document.
 
-#### Step 6. Sign in to your app
+### Step 6. Sign in to your app
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
 
 This is client-side implementation.
 
-### Implicit flow
+## Implicit flow
 
 This flow is mainly used by Clients implemented in a browser using a scripting language such as JavaScript or SPA. Since the client using this flow is public (meaning that the source code is available through a browser), you cannot have a `client_secret` with this flow.
 
 For this flow, you can use the guide shown [here](http://docs.identityserver.io/en/aspnetcore1/quickstarts/7_javascript_client.html#reference-oidc-client), as there is a handy javascript library called [oidc-client-js](https://github.com/IdentityModel/oidc-client-js) made by the IdentityServer team. The guide assumes you are using Visual Studio on Windows environment, but since this flow should be used for front-end apps, it should work on any platform.
 
-### Hybrid flow
+## Hybrid flow
 
 The Hybrid flow takes the best of Authorization code flow and Implicit flow together. For implicit flow, all tokens are transmitted through a browser. This may be okay for `ID Token`, but `Access Token` is too sensitive to be transmitted via front end. 
 
@@ -258,26 +257,31 @@ Hybrid flow adds a layer of security. The `identity token` is transmitted via th
 
 The steps for this flow is similar to Authorization Code flow, with a few differences. For more details on the spec, see [here](http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth).
 
-#### Step 1. Prepare a request to Authorize Endpoint
+### Step 1. Prepare a request to Authorize Endpoint
 
-##### Method 
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/authorize?client_id=example_client&scope=openid%20GluwaApi&response_type=code%20id_token&redirect_uri=https://redirect-after-login.com&state=abcd&nonce=1234 \
+-X GET
+```
+
+### Method 
 
 | Method | URL                                      |
 |--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize?</code> |
+| GET    | <code class="highlighter-rouge">https://auth.gluwa.com/connect/authorize</code> |
 
-##### Parameters
-
+### Parameters
 
 | Name          | Type/Value                               | Required | Path/Query | Description                              |
 |---------------|------------------------------------------|----------|------------|------------------------------------------|
-| client_id     | String                                   | yes      | Query      | Identifier of the client                 |
-| scope         | String                                   | yes      | Quey       | One or more registered scopes.           |
-| redirect_uri  | String                                   | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
-| response_type | code token, code id_token | yes      | Query      | Requests an authorization code           |
-| state         | String                                   | no       | Query      | identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection. |
-| nonce         |  String                            |no          |Query          |  Nonce is a string value that is associated with the client session to mitigate replay attacks. Where as state only provides a way to bind the client's request and the response from auth server together, nonce provides a way for the client to determine if the token is actually generated for the client by the auth server.                                        |
-
+| `client_id`     | String                                   | yes      | Query      | Identifier of the client                 |
+| `scope`         | String                                   | yes      | Quey       | One or more registered scopes.           |
+| `redirect_uri`  | String                                   | yes      | Query      | must exactly match one of the allowed redirect URIs for that client |
+| `response_type` | code token, code id_token | yes      | Query      | Requests an authorization code           |
+| `state`         | String                                   | no       | Query      | identityserver will echo back the state value on the token response, this is for round tripping state between client and provider, correlating request and response and CSRF/replay protection. |
+| `nonce`         |  String                            |no          |Query          |  Nonce is a string value that is associated with the client session to mitigate replay attacks. Where as state only provides a way to bind the client's request and the response from auth server together, nonce provides a way for the client to determine if the token is actually generated for the client by the auth server.                                        |
 
 While the `state` parameter is not necessary, it is recommended. The value needs to be random and hard to guess. For exmaple, `Guid` can work.
 
@@ -285,19 +289,20 @@ While the `state` parameter is not necessary, it is recommended. The value needs
 
 When `nonce` is present in the authorize request, the auth server will include nonce as one of the properties of the id token. The client MUST verify that the nonce in the id token is the same as the nonce it passed in to the authorize request.
 
-##### Example Request
-
-```
-https://auth.gluwa.com/connect/authorize?client_id=exampl_client&scope=openid%20GluwaApi&response_type=code%20id_token&redirect_uri=https://redirect-after-login.com&state=abcd&nonce=1234
-```
-
-#### Step 2. Redirect the user to the endpoint in step 1
+### Step 2. Redirect the user to the endpoint in step 1
 
 When users click the `login` button on your app, redirect them to the URL formed in Step 1.
 
 Before the redirect, you will need to persist `state` externally, typically using a browser cookie. This is due to the Auth server giving you back this value when it calls your `redirect_uri` as a query string, just after users login and give your app consent.
 
-#### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
+### Step 3. Auth server redirects back to `redirect_uri` formed in step 1.
+
+> Example request
+
+```shell
+curl https://redirect-after-login.com/#code=12365sdfsdf445&id_token=sdlfiqlk1231568654&scope=openid%20GluwaApi&state=abcd&session_state=sdfio23123 \
+-X GET
+```
 
 In hybrid flow all response parameters are added to the fragment component (component after `#` in the URL of the `redirect_uri` Fragment parameters will depend on what you've put as `response_type` in step 1. Following the example given in step 1, the query parameters will be:
 
@@ -307,24 +312,28 @@ In hybrid flow all response parameters are added to the fragment component (comp
 
 (since we only requested for code and `id_token` )
 
-##### Example Request
-```
-https://redirect-after-login.com/#code=12365sdfsdf445&id_token=sdlfiqlk1231568654&scope=openid%20GluwaApi&state=abcd&session_state=sdfio23123
-```
-
 `id_token` must be validated before usage as shown in the next step (step 4). After the validation is successful, you can use the code to obtain `access_token` through the token endpoint as shown in step 4 of Authorization Code flow.
 
 Remembe to validate the state field as well.
 
-#### Step 4. Validate ID token and Access Token
+### Step 4. Validate ID token and Access Token
 
 Before using the ID Token and Access Token, client must validate the tokens as laid out in [OpenID Connect Core 1.0, section 3.1.3.7 and 3.1.3.8](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation). It is up to the client how to validate the tokens, which is outside the scope of this document.
 
-#### 5. Sign in to your app
+### Step 5. Sign in to your app
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
 
-### Client Credentials As User
+## Client Credentials As User
+
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/token \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'client_id={client_id}&client_secret={client_secret}&scope={scopes}&grant_type=client_credentials_as_user'
+```
 
 This flow is used for users who would like to use our API with their client credentials (log in using client id and secret). We assign the user's Gluwa account to a specific client, and the user will be able to login to that account using client id and secret.
 
@@ -332,15 +341,10 @@ You can send the request to the auth server as follows:
 
 | Method | URL                    | Host           | Content-Type | Cache Control |
 |--------|------------------------|----------------|--------------|---------------|
-| POST   | connect/token HTTP/1.1 | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
+| POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
 
 
-#### Request Example
-```
-client\_id={client\_id}&client\_secret={client\_secret}&scope={scopes}&grant\_type=client\_credentials\_as\_user
-```
-
-### Logging out
+## Logging out
 
 Logout from your own client, not the Gluwa Auth server. 
 
@@ -348,23 +352,26 @@ Should you really want to logout from both your own client and on Gluwa Auth ser
 
 **Note that if you do decide to use these endpoints, you are logging the user out completely from Gluwa Auth system, meaning that they will also be logged out of other clients that may not be in your control.**
 
-### Revocation endpoint
+## Revocation endpoint
+
+> Example request
+
+```shell
+curl https://auth.gluwa.com/connect/revocation \
+-X POST \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'token=<your_refresh_token>&token_type_hint=refresh_token&client_id=<your_client_id>&client_secret=<your_client_secret>'
+```
 
 You can revoke token by:
 
-
 | Method | URL                         | Host           | Content-Type                      |
 |--------|-----------------------------|----------------|-----------------------------------|
-| POST   | connect/revocation HTTP/1.1 | auth.gluwa.com | application/x-www-form-urlencoded |
+| POST   | connect/revocation | auth.gluwa.com | application/x-www-form-urlencoded |
 
-
-#### Request Example
-```
-token=<your_refresh_token>&token_type_hint=refresh_token&client_id=<your_client_id>&client_secret=<your_client_secret>
-```
 You cannot revoke access token. Access token lifetime is set to 1 hour.
 
-### End Session Endpoint
+## End Session Endpoint
 
 | Method | URL      |
 |--------|----------|
@@ -375,7 +382,7 @@ For the details of each query parameter, please click [here](http://docs.identit
 
 Again, if state is provided, the auth server will give this back in your `post_redirect_uri` so you can validate the state after redirection.
 
-### Session management
+## Session management
 
 The documentation for session status detection can be found [here](http://openid.net/specs/openid-connect-session-1_0.html#ChangeNotification). 
 
@@ -385,7 +392,7 @@ The documentation for session status detection can be found [here](http://openid
 
 # Endpoints and Resources
 
-Welcome to the Gluwa API Reference Documentation for Endpoints and Resources
+Welcome to the Gluwa API Reference Documentation for Endpoints and Resources.
 These documents describe all resources available in the Gluwa API and covers the endpoints, parameters, requests and responses.
 
 # Bank
@@ -408,45 +415,52 @@ Get the list of banks supported by Gluwa.
 ### Parameters
 | Name    | Type/Value                   | Required | Path/Query | Description                              |
 |---------|------------------------------|----------|------------|------------------------------------------|
-| country | String enum: [World, US, KR] | yes      | Path       | Filter banks by country.                 |
-| offset  | Integer (int64)              | no       | Query      | Number of banks to skip from the beginning of the list; used for pagination. Defaults to 0. |
-| limit   | Integer (int64)              | no       | Query      | Number of banks to include in the result. Defaults to 25. |
+| country | String enum: [World, US, KR] | yes      | Path       | Filter banks by country                  |
+| offset  | Integer (int64)              | no       | Query      | Number of banks to skip from the beginning of the list. Used for pagination. Defaults to 0 |
+| limit   | Integer (int64)              | no       | Query      | Number of banks to include in the result. Defaults to 25 |
+
+> **Request Example**: Get all banks supported by Gluwa in Korea with no offset and no limit.
+
+```json 
+https://api.gluwa.com/V4.1/Banks/KR
+```
 
 ### Responses
 
-> Successful Response (200)
+> 200 OK: List of banks
+
 ```json
 [
-{
-"InstitutionCode": "string",
-"DisplayName": "string",
-"LogoImageUrl": "string"
-}
+    {
+        "InstitutionCode": "string",
+        "DisplayName": "string",
+        "LogoImageUrl": "string"
+        }
 ]
 ```
 
-> Invalid country parameter error response (400)
+> 400 Bad Request: Invalid country parameter
 
 ```json
 {
-"InnerErrors": [
-{
-"Code": "string",
-"Path": "string",
-"Message": "string"
-}
-],
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
+    "InnerErrors": [
+        {
+            "Code": "Other",
+            "Path": "country",
+            "Message": "The value 'XX' is not valid."
+        }
+    ],
+    "Code": "InvalidUrlParameters",
+    "Message": "one of more Url parameters are invalid."
 }
 ```
+
 Response Codes
 
 | Code | Type/Value                        | Description                            |
 |------|-----------------------------------|----------------------------------------|
-| 200  | Array: Financial Institution      | List of Banks                          |
-| 400  | RequestValidationWithoutBodyError | Invalid country parameter is provided. |
+| 200 OK | Array: Financial Institutions      | List of Banks                          |
+| 400 Bad Request | InvalidUrlParameters | Invalid country parameter |
 
 ## Search Banks
 
@@ -468,43 +482,49 @@ Search through the list of banks by keyword.
 | offset  | Integer (int64)              | no       | Query      | Number of banks to skip from the beginning of the list; used for pagination. Defaults to 0. |
 | limit   | Integer (int64)              | no       | Query      | Number of banks to include in the result. Defaults to 25. |
 
+> **Request Example**: Search for the 'Korea Development Bank' by using the term 'Development'
+
+```json
+https://api.gluwa.com/V4.1/Banks/KR/searches/Development
+```
+
 ### Responses
 
-> Successful Response (200)
+> 200 OK: List of Banks
 
 
 ```json
 [
-{
-"InstitutionCode": "string",
-"DisplayName": "string",
-"LogoImageUrl": "string"
-}
+    {
+        "InstitutionCode": "string",
+        "DisplayName": "string",
+        "LogoImageUrl": "string"
+    }
 ]
 ```
 
-> Invalid country parameter error response (400)
+> 400 Bad Request: Invalid country parameter 
 
 ```json
 {
-"InnerErrors": [
-{
-"Code": "string",
-"Path": "string",
-"Message": "string"
-}
-],
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
+    "InnerErrors": [
+        {
+            "Code": "Other",
+            "Path": "country",
+            "Message": "The value 'XX' is not valid."
+        }
+    ],
+    "Code": "InvalidUrlParameters",
+    "Message": "one of more Url parameters are invalid."
 }
 ```
+
 Response Codes
 
 | Code | Type/Value                        | Description                            |
 |------|-----------------------------------|----------------------------------------|
-| 200  | Array: Financial Institution      | List of Banks                          |
-| 400  | RequestValidationWithoutBodyError | Invalid country parameter is provided. |
+| 200 OK | Array: Financial Institution      | List of Banks                          |
+| 400 Bad Request | InvalidUrlParameters | Invalid country parameter |
 
 
 # Funding Source
@@ -623,7 +643,7 @@ Response codes:
 | 500  | InternalServerError               | Internal server error.                   |
 
 
-## Deactivate a funding source.
+## Deactivate a funding source
 A deactivated funding source cannot be viewed or used for withdrawals.
 
 ### Method
@@ -1045,8 +1065,6 @@ Response Codes
 
 
 # Crypto Funding Source
-A funding source represents the source of fiat currency such as bank accounts and credit cards. Users can make deposits to Gluwa from their funding source, or withdraw from Gluwa to their funding source. 
-
 These endpoints are used to create cryptocurrency funding sources under a user or to retrieve cryptocurrency funding sources that belong to a user.
 
 ## Verify Crypto Funding Source
@@ -1112,7 +1130,7 @@ We only support this for P2PKH BTC addresses.
 }
 ```
 
-> Signed message is invalid. (400)
+> Signed message is invalid (400)
 
 ```json
 {
@@ -1228,7 +1246,7 @@ Response Codes
 |------|-----------------------------------|------------------------------------------|
 | 200 | Array: FundingSourceResponse           | List of funding sources.|
 
-## Create a cryptocurrency funding source.
+## Create a cryptocurrency funding source
 Create a new cryptocurrency funding source for the current user.
 
 ### Method
@@ -1336,7 +1354,7 @@ Response Codes
 
 
 # Transaction 
-Transaction represents a transfer of Gluwa coin from a source to a destination. 
+Transaction represents a transfer of Gluwacoin from a source to a destination. 
 
 Transaction has three types: 
 * Deposit -adds funds to a user's wallet from a funding source
@@ -1345,7 +1363,7 @@ Transaction has three types:
 
 Transaction API resource allows retrieving a transaction or a list of transactions associated with a user's wallet. It also allows creating a Transfer or Withdraw transaction sent from the current user's wallet.
 
-## List of transactions associated to a wallet.
+## List of transactions associated to a wallet
 Retrieve a list of transactions sent to or from a specified wallet.
 
 ### Method
@@ -1353,6 +1371,12 @@ Retrieve a list of transactions sent to or from a specified wallet.
 | Method | URL                                      |
 |--------|------------------------------------------|
 | GET  | <code class="highlighter-rouge">/V4.1/Wallets/{walletID}/Transactions </code> |
+
+> **Response Example**: Search for all transactions associated to this wallet
+
+```json
+https://api.gluwa.com/V4.1/Wallets/61b04bb0-70fc-464c-9c7e-ab56dbdc3366/Transactions
+```
 
 ### Request Parameters
 
@@ -1447,7 +1471,6 @@ Retrieve a list of transactions sent to or from a specified wallet.
 }
 ```
 
-```
 > Server Error (500)
 
 ```json
@@ -1497,12 +1520,28 @@ Create a new transaction that moves funds to or from the current user's wallet.
 | Note                   | string range (up to 250 chars)           | no        | Extra information to attach to transaction. |
 | MerchantOrderID        | string range (up to 60 chars)            | no        | Extra information to attach to transaction. |
 
+> Request Body Example
+
+```json
+{
+  "Type": "string",
+  "DepositType": "string",
+  "WithdrawTo": "string (uuid)",
+  "Recipient": "string",
+  "Password": "string (password)",
+  "Amount": "string",
+  "IsExactAmountTransfer": "boolean",
+  "ExactAmountTransferFee": "string",
+  "Note": "string",
+  "MerchantOrderID": "string"
+}
+```
+
 ### Request Parameters
 
 | Name | Type/Value   | Required | Path/Query | Description        |
 |------|--------------|----------|------------|--------------------|
 | walletID   | String: uuid | yes      | Path       | Wallet ID. |
-|
 
 ### Responses 
 
@@ -1678,8 +1717,6 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-
-)
 Response Codes
 
 | Code | Type/Value                               | Description                              |
@@ -1696,7 +1733,7 @@ Response Codes
 | 500  | InternalServerError                      | Service error.                           |
 | 503  | ServiceUnavailableError                  | Service unavaialable                     |
 
-## Retrieve a transaction by ID and a specified wallet.
+## Retrieve a transaction by ID and a specified wallet
 
 ### Method
 
@@ -2525,10 +2562,16 @@ Response Codes
 | searchTerm | string          | no       | Query      | Username as the search term.             |
 | offset     | integer (int32) | no       | Query      | Number of users to skip from the beginning of list. Used for pagination. Defaults to 0. |
 | limit      | integer (int32) | no       | Query      | Number of users in the result. Defaults to 20, maximum of 50. |
-                                                                                                                               
+
+> **Request Example**: Search for the first 3 users that contain the term 'John'
+
+```json
+https://api.gluwa.com/V4.1/Users?searchTerm=john&limit=3
+```
+
 ### Responses 
 
-> List of users that contain the search term in their username. (200)
+> 200 OK: List of users that contain the search term in their username
 
 ```json
 [
@@ -2540,23 +2583,6 @@ Response Codes
 ```
 
 > Validation error. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Bad Request. (400)
 
 ```json
 {
@@ -2590,16 +2616,15 @@ Response Codes
 |------|------------------------------------------|------------------------------------------|
 | 200  | Array <User>                  | List of users that contain the search term in their username. |
 | 400  | RequestValidationWithBodyError          | Invalid request.                         |
-| 400  | BadRequestError        | Bad Request                         |
 | 500 | InternalServerError                 | Server Error.      |
 
 # Virtual Account
 
-*** Korean Users ONLY. ***
+** Korean Users ONLY. **     
 
 Virtual Account is a virtual bank account that belongs to Gluwa. Each user will get a dedicated virtual bank account number with his/her wallet. 
 
-When fiat currency is deposited into this virtual bank account, Gluwa will accredit the user's wallet with the same amount in Gluwa coin. The VirtualAccount resource can be used to view virtual accounts linked to a wallet.
+When fiat currency is deposited into this virtual bank account, Gluwa will accredit the user's wallet with the same amount in Gluwacoin. The VirtualAccount resource can be used to view virtual accounts linked to a wallet.
 
 ## Get virtual accounts linked to a wallet
 
@@ -2728,7 +2753,7 @@ Response Codes
 
 # Wallet
 
-A Wallet is where your Gluwa coin is stored. You can also have multiple wallets across multiple countries and currencies. 
+A Wallet is where your Gluwacoin is stored. You can also have multiple wallets across multiple countries and currencies. 
 
 The Wallet API resource allows creating, retrieving, and activating locked wallets.
 
@@ -2745,7 +2770,7 @@ Retrieve a list of wallets for the current user.
 
 ### Responses
 
-> List of Wallets. (200)
+> 200 OK. List of Wallets associated to current user
 
 ```json
 [
@@ -2758,6 +2783,16 @@ Retrieve a list of wallets for the current user.
   }
 ]
 ```
+
+> 401 Unauthorized: Invalid credentials
+
+```json
+{
+    "Code": "InvalidCredentials",
+    "Message": "Client does not have permission to access this service."
+}
+```
+
 > Internal Server Error. (500)
 
 ```json
@@ -2775,6 +2810,7 @@ Response Codes
 | Code | Type/Value             | Description           |
 |------|------------------------|-----------------------|
 | 200  | Array <WalletResponse> | List of wallets       |
+| 401  | InvalidCredentials | Invalid Credentials       |
 | 500  | InternalServerError    | Internal Server Error |
 
 ## Create a new wallet for the current user.
