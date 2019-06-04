@@ -59,6 +59,7 @@ search: true
 # Gluwa Overview
 
 Gluwa is a fiat-pegged cryptocurrency wallet that provides *Bitcoin* deposit and withdrawal. The Gluwa wallet enables users to process national and international transactions, allowing for secure management of money.
+
 Through Gluwa's public-facing REST API, users can:
 
 * Get information about supported Banks
@@ -131,7 +132,6 @@ An access token will be returned when posting to the below URL with a body conta
 | `username`            | String        | yes | Username of the client |
 | `password`            | String        | yes | Password of the client |
 | `scope`                  | String        | yes | One or more registered scopes.           |
-
 
 # OpenID Connect
 Gluwa Auth server uses IdentityServer4 to authenticate/authorize its users. It strictly follows the specification laid out in [OpenID Connect Core 1.0](http://openid.net/specs/openid-connect-core-1_0.html).
@@ -320,6 +320,7 @@ Remembe to validate the state field as well.
 
 Before using the ID Token and Access Token, client must validate the tokens as laid out in [OpenID Connect Core 1.0, section 3.1.3.7 and 3.1.3.8](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation). It is up to the client how to validate the tokens, which is outside the scope of this document.
 
+
 ### Step 5. Sign in to your app
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
@@ -342,7 +343,6 @@ You can send the request to the auth server as follows:
 | Method | URL                    | Host           | Content-Type | Cache Control |
 |--------|------------------------|----------------|--------------|---------------|
 | POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
-
 
 ## Logging out
 
@@ -427,7 +427,7 @@ https://api.gluwa.com/V4.1/Banks/KR
 
 ### Responses
 
-> 200 OK: List of banks
+> Successful Response (200)
 
 ```json
 [
@@ -445,13 +445,14 @@ https://api.gluwa.com/V4.1/Banks/KR
 {
     "InnerErrors": [
         {
-            "Code": "Other",
-            "Path": "country",
-            "Message": "The value 'XX' is not valid."
+            "Code": "string",
+            "Path": "string",
+            "Message": "string"
         }
     ],
-    "Code": "InvalidUrlParameters",
-    "Message": "one of more Url parameters are invalid."
+    "Code": "string",
+    "Message": "string",
+    "ExtraData": "string"
 }
 ```
 
@@ -509,13 +510,14 @@ https://api.gluwa.com/V4.1/Banks/KR/searches/Development
 {
     "InnerErrors": [
         {
-            "Code": "Other",
-            "Path": "country",
-            "Message": "The value 'XX' is not valid."
+            "Code": "string",
+            "Path": "string",
+            "Message": "string"
         }
     ],
-    "Code": "InvalidUrlParameters",
-    "Message": "one of more Url parameters are invalid."
+    "Code": "string",
+    "Message": "string",
+    "ExtraData": "string"
 }
 ```
 
