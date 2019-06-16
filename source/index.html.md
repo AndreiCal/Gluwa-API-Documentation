@@ -14,52 +14,61 @@ includes:
 search: true
 ---
 # Gluwa API Documentation
-**Table of Contents**
 
+
+* [Gluwa API Documentation](#gluwa-api-documentation)
 * [Gluwa Overview](#gluwa-overview)
 * [Getting Started with Gluwa API](#getting-started-with-gluwa-api)
-	* [Auth API and Gluwa API](#auth-api-and-gluwa-api)
-	* [OpenID Connect](#openid-connect)
+	* [Get an Access Token from Auth API](#get-an-access-token-from-auth-api)
+* [OpenID Connect](#openid-connect)
+	* [Authorization Code flow](#authorization-code-flow)
+	* [Implicit flow](#implicit-flow)
+	* [Hybrid flow](#hybrid-flow)
+	* [Client Credentials As User](#client-credentials-as-user)
+	* [Logging out](#logging-out)
+	* [Revocation endpoint](#revocation-endpoint)
+	* [End Session Endpoint](#end-session-endpoint)
+	* [Session management](#session-management)
 * [Endpoints and Resources](#endpoints-and-resources)
 * [Bank](#bank)
 	* [List Banks](#list-banks)
 	* [Search Banks](#search-banks)
 * [Funding Source](#funding-source)
 	* [Show a funding source](#show-a-funding-source)
-	* [Deactivate a funding source.](#deactivate-a-funding-source)
 	* [List funding sources](#list-funding-sources)
+	* [Deactivate a funding source](#deactivate-a-funding-source)
 	* [Create a micro deposit](#create-a-micro-deposit)
 	* [Verify a micro deposit](#verify-a-micro-deposit)
 * [Crypto Funding Source](#crypto-funding-source)
-	* [Verify Crypto Funding Source.](#verify-crypto-funding-source)
 	* [List crypto funding sources](#list-crypto-funding-sources)
-	* [Create a cryptocurrency funding source.](#create-a-cryptocurrency-funding-source)
-* [Transaction](#transaction)
-	* [List of transactions associated to a wallet.](#list-of-transactions-associated-to-a-wallet)
-	* [Move funds to/from the current user's wallet](#move-funds-tofrom-the-current-users-wallet)
-	* [Retrieve a transaction by ID and a specified wallet.](#retrieve-a-transaction-by-id-and-a-specified-wallet)
-	* [Cancel requested deposit](#cancel-requested-deposit)
-	* [Calculate transaction fee](#calculate-transaction-fee)
-	* [Get a quote for depositing and withdrawing](#get-a-quote-for-depositing-and-withdrawing)
-	* [Create a new transaction using quote provided](#create-a-new-transaction-using-quote-provided)
-* [User](#user)
-	* [Search by username](#search-by-username)
-* [Virtual Account](#virtual-account)
-	* [Get virtual accounts linked to a wallet](#get-virtual-accounts-linked-to-a-wallet)
+	* [Verify Crypto Funding Source](#verify-crypto-funding-source)
+	* [Create a cryptocurrency funding source](#create-a-cryptocurrency-funding-source)
 * [Wallet](#wallet)
 	* [List wallets](#list-wallets)
-	* [Create a new wallet for the current user.](#create-a-new-wallet-for-the-current-user)
 	* [Search wallet by ID](#search-wallet-by-id)
-	* [Activate a locked wallet](#activate-a-locked-wallet)
 	* [Get the fee models associated to a wallet.](#get-the-fee-models-associated-to-a-wallet)
+	* [Create a new wallet for the current user.](#create-a-new-wallet-for-the-current-user)
+	* [Activate a locked wallet](#activate-a-locked-wallet)
 	* [Get webhook information](#get-webhook-information)
 	* [Create or update webhook URL and secret](#create-or-update-webhook-url-and-secret)
 	* [Generate QR code for transaction request](#generate-qr-code-for-transaction-request)
+* [User](#user)
+	* [Search by username](#search-by-username)
+* [Transaction](#transaction)
+	* [List of transactions associated to a wallet](#list-of-transactions-associated-to-a-wallet)
+	* [Retrieve a transaction by ID and a specified wallet](#retrieve-a-transaction-by-id-and-a-specified-wallet)
+	* [Calculate transaction fee](#calculate-transaction-fee)
+	* [Move funds to/from the current user's wallet](#move-funds-tofrom-the-current-users-wallet)
+	* [Cancel requested deposit](#cancel-requested-deposit)
+	* [Get a quote for crypto depositing and withdrawing](#get-a-quote-for-crypto-depositing-and-withdrawing)
+	* [Create a new transaction using quote provided](#create-a-new-transaction-using-quote-provided)
+* [Virtual Account](#virtual-account)
+	* [Get virtual accounts linked to a wallet](#get-virtual-accounts-linked-to-a-wallet)
+
 
 # Gluwa Overview
 
 Gluwa is a fiat-pegged cryptocurrency wallet that provides *Bitcoin* deposit and withdrawal. The Gluwa wallet enables users to process national and international transactions, allowing for secure management of money.
-
 Through Gluwa's public-facing REST API, users can:
 
 * Get information about supported Banks
@@ -132,6 +141,7 @@ An access token will be returned when posting to the below URL with a body conta
 | `username`            | String        | yes | Username of the client |
 | `password`            | String        | yes | Password of the client |
 | `scope`                  | String        | yes | One or more registered scopes.           |
+
 
 # OpenID Connect
 Gluwa Auth server uses IdentityServer4 to authenticate/authorize its users. It strictly follows the specification laid out in [OpenID Connect Core 1.0](http://openid.net/specs/openid-connect-core-1_0.html).
@@ -320,7 +330,6 @@ Remembe to validate the state field as well.
 
 Before using the ID Token and Access Token, client must validate the tokens as laid out in [OpenID Connect Core 1.0, section 3.1.3.7 and 3.1.3.8](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation). It is up to the client how to validate the tokens, which is outside the scope of this document.
 
-
 ### Step 5. Sign in to your app
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
@@ -343,6 +352,7 @@ You can send the request to the auth server as follows:
 | Method | URL                    | Host           | Content-Type | Cache Control |
 |--------|------------------------|----------------|--------------|---------------|
 | POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
+
 
 ## Logging out
 
@@ -405,6 +415,13 @@ Get the list of banks by country, or search for a specific institution.
 
 Get the list of banks supported by Gluwa.
 
+> Request Example
+
+```curl
+curl -X GET 
+  https://api.gluwa.com/V4.1/Banks/{Country} 
+  -H "Authorization: Bearer {token}" 
+```
 
 ### Method
 
@@ -419,15 +436,9 @@ Get the list of banks supported by Gluwa.
 | offset  | Integer (int64)              | no       | Query      | Number of banks to skip from the beginning of the list. Used for pagination. Defaults to 0 |
 | limit   | Integer (int64)              | no       | Query      | Number of banks to include in the result. Defaults to 25 |
 
-> **Request Example**: Get all banks supported by Gluwa in Korea with no offset and no limit.
-
-```json 
-https://api.gluwa.com/V4.1/Banks/KR
-```
-
 ### Responses
 
-> Successful Response (200)
+> 200 OK: List of banks
 
 ```json
 [
@@ -445,14 +456,13 @@ https://api.gluwa.com/V4.1/Banks/KR
 {
     "InnerErrors": [
         {
-            "Code": "string",
-            "Path": "string",
-            "Message": "string"
+            "Code": "Other",
+            "Path": "country",
+            "Message": "The value 'XX' is not valid."
         }
     ],
-    "Code": "string",
-    "Message": "string",
-    "ExtraData": "string"
+    "Code": "InvalidUrlParameters",
+    "Message": "one of more Url parameters are invalid."
 }
 ```
 
@@ -460,12 +470,20 @@ Response Codes
 
 | Code | Type/Value                        | Description                            |
 |------|-----------------------------------|----------------------------------------|
-| 200 OK | Array: Financial Institutions      | List of Banks                          |
-| 400 Bad Request | InvalidUrlParameters | Invalid country parameter |
+| 200 | Array: Financial Institutions      | List of Banks                          |
+| 400  | Bad Request | Request syntax malformed |
 
 ## Search Banks
 
 Search through the list of banks by keyword.
+
+> Request Example
+
+```shell
+curl -X GET 
+  https://api.gluwa.com/V4.1/Banks/KR/searches/{keyword}} 
+  -H "Authorization: Bearer {token}"
+```
 
 ### Method
 
@@ -483,16 +501,10 @@ Search through the list of banks by keyword.
 | offset  | Integer (int64)              | no       | Query      | Number of banks to skip from the beginning of the list; used for pagination. Defaults to 0. |
 | limit   | Integer (int64)              | no       | Query      | Number of banks to include in the result. Defaults to 25. |
 
-> **Request Example**: Search for the 'Korea Development Bank' by using the term 'Development'
-
-```json
-https://api.gluwa.com/V4.1/Banks/KR/searches/Development
-```
 
 ### Responses
 
 > 200 OK: List of Banks
-
 
 ```json
 [
@@ -510,14 +522,13 @@ https://api.gluwa.com/V4.1/Banks/KR/searches/Development
 {
     "InnerErrors": [
         {
-            "Code": "string",
-            "Path": "string",
-            "Message": "string"
+            "Code": "Other",
+            "Path": "country",
+            "Message": "The value 'XX' is not valid."
         }
     ],
-    "Code": "string",
-    "Message": "string",
-    "ExtraData": "string"
+    "Code": "InvalidUrlParameters",
+    "Message": "one of more Url parameters are invalid."
 }
 ```
 
@@ -525,8 +536,8 @@ Response Codes
 
 | Code | Type/Value                        | Description                            |
 |------|-----------------------------------|----------------------------------------|
-| 200 OK | Array: Financial Institution      | List of Banks                          |
-| 400 Bad Request | InvalidUrlParameters | Invalid country parameter |
+| 200  | Array: Financial Institution      | List of Banks                          |
+| 400  | Bad Request | Request syntax Malformed |
 
 
 # Funding Source
@@ -543,6 +554,14 @@ Micro deposit endpoints are for initiating and completing the verification proce
 
 Retrieve a funding source of any type with specified ID.
 
+> Request Example
+
+```shell
+curl -X GET 
+  "https://api.gluwa.com/V4.1/FundingSources/{ID}"
+  -H "Authorization: Bearer {token}"
+```
+  
 ### Method
 
 | Method | URL                                      |
@@ -555,9 +574,10 @@ Retrieve a funding source of any type with specified ID.
 |------|--------------|----------|------------|--------------------|
 | ID   | String: uuid | yes      | Path       | Funding Source ID. |
 
+
 ### Responses
 
-> Successful Response (200)
+> 200 OK: Successful Response
 
 ```json
 {
@@ -573,9 +593,13 @@ Retrieve a funding source of any type with specified ID.
 "Nickname": "string"
 
 }
+
+*Type: [ Checking, Savings, Crypto ] - This is the type of funding source
+*Status: [ NotVerified, Verified, MicroDepositSent, Deactivated, MicroDepositSentFailed ] - Funding source status in Gluwa
 ```
 
-> Invalid request (400)
+
+> 400 Bad Request: Invalid request
 
 ```json
 {
@@ -593,7 +617,7 @@ Retrieve a funding source of any type with specified ID.
 
 }
 ```
-> Access to this funding source is denied (403)
+> 403 Forbidden: Access to this funding source is denied
 
 ```json
 {
@@ -611,7 +635,7 @@ Retrieve a funding source of any type with specified ID.
 
 }
 ```
-> Funding source is not found (400)
+> 404 Not Found: Funding source is not found 
 
 ```json 
 {
@@ -622,7 +646,7 @@ Retrieve a funding source of any type with specified ID.
 
 }
 ```
-> Internal server error (500)
+> 500 Internal Server Error
 
 ```json
 {
@@ -638,109 +662,22 @@ Response codes:
 
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
-| 200  |FundingSourceResponse              | Funding source with the specified ID.    |
-| 400  | RequestValidationWithoutBodyError | Invalid request.                         |
-| 403  | ForbiddenRequestError             | Access to this funding source is denied. |
-| 404  | NotFoundError                     | Funding source is not found.             |
-| 500  | InternalServerError               | Internal server error.                   |
-
-
-## Deactivate a funding source
-A deactivated funding source cannot be viewed or used for withdrawals.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| DELETE    | <code class="highlighter-rouge">/V4.1/FundingSources/{ID}}</code> |
-
-### Parameters
-
-| Name | Type/Value   | Required | Path/Query | Description        |
-|------|--------------|----------|------------|--------------------|
-| ID   | String: uuid | yes      | Path       | Funding Source ID. |
-
-### Responses
-
-> Successful Response (200)
-
-```json
-{}
-```
-
-> Invalid request (400)
-
-```json
-{
-
-"InnerErrors": [
-{
-"Code": "string",
-"Path": "string",
-"Message": "string"
-}
-],
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
-
-}
-```
-> Access to this funding source is denied (403)
-
-```json
-{
-
-"InnerErrors": [
-{
-"Code": "string",
-"Path": "string",
-"Message": "string"
-}
-],
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
-
-}
-```
-> Funding source is not found (400)
-
-```json 
-{
-
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
-
-}
-```
-> Internal server error (500)
-
-```json
-{
-
-"ID": "string (uuid)",
-"Code": "string",
-"Message": "string",
-"ExtraData": "string"
-}
-``` 
-
-Response Codes:
-
-| Code | Type/Value                        | Description                              |
-|------|-----------------------------------|------------------------------------------|
-| 200  | Void                              | Founding source deactivated              |
-| 400  | RequestValidationWithoutBodyError | Invalid request.   |
-| 403  | ForbiddenRequestError             | Access to this funding source is denied. |
-| 404  | NotFoundError                     | Funding source is not found.             |
-| 500  | InternalServerError               | Internal server error.                   |
-
+| 200 |FundingSourceResponse              | Funding source with the specified ID.    |
+| 400  | Bad Request | Request syntax malformed                        |
+| 403 | ForbiddenRequestError             | Access to this funding source is denied. |
+| 404 | NotFoundError                     | Funding source is not found.             |
+| 500 | InternalServerError               | Internal server error.                   |
 
 ## List funding sources
 Retrieve the list of funding sources of all types that belong to the user.
 
+> Request Example
+
+```shell
+curl -X GET 
+  "https://api.gluwa.com/V4.1/FundingSources"
+  -H "Authorization: Bearer {token}"
+```
 
 ### Method
 
@@ -750,10 +687,10 @@ Retrieve the list of funding sources of all types that belong to the user.
 
 ### Responses
 
-> Successful Response (200)
+> 200 OK: List of Funding Sources
 
 ```json
-[
+
 {
 "ID": "string (uuid)",
 "Country": "string",
@@ -765,10 +702,12 @@ Retrieve the list of funding sources of all types that belong to the user.
 "CryptoAddress": "string",
 "Nickname": "string"
 }
-]
+
+*Type: [ Checking, Savings, Crypto ] - This is the type of funding source
+*Status: [ NotVerified, Verified, MicroDepositSent, Deactivated, MicroDepositSentFailed ] - Funding source status in Gluwa
 ```
 
-> Internal Server Error (500)
+> 500 Internal Server Error
 
 ```json
 {
@@ -788,8 +727,119 @@ Response Codes
 | 500  | InternalServerError               | Internal server error.                   |
 
 
+## Deactivate a funding source
+A deactivated funding source cannot be viewed or used for withdrawals.
+
+> Request Example
+
+```shell
+curl -X DELETE 
+  "https://api.gluwa.com/V4.1/FundingSources/{ID}"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| DELETE    | <code class="highlighter-rouge">/V4.1/FundingSources/{ID}</code> |
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Funding Source ID. |
+
+
+
+### Responses
+
+> OK 200: Funding source deactivated
+
+```json
+{}
+```
+
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
+}
+```
+> 403 Forbidden: Access to this funding source is denied
+
+```json
+{
+
+"InnerErrors": [
+{
+"Code": "string",
+"Path": "string",
+"Message": "string"
+}
+],
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
+}
+```
+> 404 Not Found: Funding Source not found
+
+```json 
+{
+
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+
+}
+```
+> 500 Internal server error 
+
+```json
+{
+
+"ID": "string (uuid)",
+"Code": "string",
+"Message": "string",
+"ExtraData": "string"
+}
+``` 
+
+Response Codes:
+
+| Code | Type/Value                        | Description                              |
+|------|-----------------------------------|------------------------------------------|
+| 200  | Void                              | Founding source deactivated              |
+| 400  | Bad Request | Request syntax Malformed.   |
+| 403  | ForbiddenRequestError             | Access to this funding source is denied. |
+| 404  | NotFoundError                     | Funding source is not found.             |
+| 500  | InternalServerError               | Internal server error.                   |
+
+
 ## Create a micro deposit
 Initiate a micro deposit for bank account verification.
+
+> Request Example
+
+```shell
+curl -X POST 
+  "https://api.gluwa.com/V4.1/FundingSources/{ID}/MicroDeposits"
+  -H "Authorization: Bearer {token}"
+```
 
 ### Method
 
@@ -805,7 +855,7 @@ Initiate a micro deposit for bank account verification.
 
 ### Responses
 
-> Guid Response (201)
+> 201 Created: Guid Response
 
 ```json
 {
@@ -813,7 +863,7 @@ Initiate a micro deposit for bank account verification.
 }
 ```
 
-> Invalid Request (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -832,7 +882,7 @@ Initiate a micro deposit for bank account verification.
 }
 ```
 
-> Access to this microfunding is denied (403)
+> 403 Forbidden: Access to this microfunding is denied
 
 ```json
 {
@@ -850,7 +900,7 @@ Initiate a micro deposit for bank account verification.
 
 }
 ```
-> Cannot initiate micro deposit due to invalid state of the funding source (403)
+> 403 Forbidden: Cannot initiate micro deposit due to invalid state of the funding source
 
 ```json
 {
@@ -861,7 +911,7 @@ Initiate a micro deposit for bank account verification.
 
 ```
 
-> Founding Source not found (404)
+> 404 Not Found: Founding Source not found
 
 ```json
 {
@@ -874,7 +924,7 @@ Initiate a micro deposit for bank account verification.
 ```
 
 
-> Internal Server Error (500)
+> 500 Internal Server Error
 
 ```json
 {
@@ -887,7 +937,7 @@ Initiate a micro deposit for bank account verification.
 }
 ```
 
-> Service is currently unavailable due to bank downtime (503)
+> 503 Service Unavailable: Service is currently unavailable due to bank downtime
 
 ```json
 {
@@ -910,7 +960,7 @@ Response Codes
 |------|-----------------------------------|------------------------------------------|
 | 201  | GuidResponse                      | Microdeposit is initiated for this funding source ID. |
 | 202  | GuidResponse                      | Microdeposit is initiated for this funding source ID. |
-| 400  | RequestValidationWithoutBodyError | Invalid request.                         |
+| 400  | BadRequest | Request Syntax Malformed                         |
 | 403  | ForbiddenRequestError             | Access to this funding source is denied. |
 | 403  | InvalidResourceStateError         | Cannot initiate micro deposit due to invalid state of the funding source. |
 | 404  | NotFoundError                     | Funding source is not found.             |
@@ -920,11 +970,19 @@ Response Codes
 ## Verify a micro deposit
 Check if a micro deposit has been completed successfully.
 
+> Request Example
+
+```shell
+curl -X PATCH 
+  "https://api.gluwa.com/V4.1/FundingSources/{ID}/MicroDeposits"
+  -H "Authorization: Bearer {token}"
+```
+
 ### Method
 
 | Method | URL                                      |
 |--------|------------------------------------------|
-| Patch    | <code class="highlighter-rouge">/V4.1/FundingSources/{ID}/MicroDeposits</code> |
+| PATCH   | <code class="highlighter-rouge">/V4.1/FundingSources/{ID}/MicroDeposits</code> |
 
 
 ### Parameters
@@ -933,9 +991,11 @@ Check if a micro deposit has been completed successfully.
 |------|--------------|----------|------------|--------------------|
 | ID   | String: uuid | yes      | Path       | Funding Source ID. |
 
+
+
 ### Responses
 
-> Micro deposit is verified.
+> 200 OK: Micro deposit is verified.
 
 ```json
 {}
@@ -943,7 +1003,7 @@ Check if a micro deposit has been completed successfully.
 
 
 
-> Verification code is not valid. (400)
+> 400 Bad Request: Verification code is not valid
 
 ```json
 {
@@ -962,7 +1022,7 @@ Check if a micro deposit has been completed successfully.
 }
 ```
 
-> Cannot verify micro deposit due to invalid funding source state. (403)
+> 403 Forbidden: Cannot verify micro deposit due to invalid funding source state
 
 ```json
 {
@@ -974,7 +1034,7 @@ Check if a micro deposit has been completed successfully.
 }
 ```
 
-> Access to this funding source is denied. (403)
+> 403 Forbidden: Access to this funding source is denied
 
 ```json 
 {
@@ -993,7 +1053,7 @@ Check if a micro deposit has been completed successfully.
 }
 ```
 
-> Funding source is not found (404)
+> 404 Not Found: Funding source is not found
 
 ```json
 {
@@ -1005,7 +1065,7 @@ Check if a micro deposit has been completed successfully.
 }
 ```
 
-> Micro deposit was never initiated. (404)
+> 404 Not Found: Micro deposit was never initiated
 
 ```json
 {
@@ -1017,7 +1077,7 @@ Check if a micro deposit has been completed successfully.
 }
 ```
 
-> Internal server error. (500)
+> 500 Internal server error
 
 ```json
 {
@@ -1030,7 +1090,7 @@ Check if a micro deposit has been completed successfully.
 }
 ```
 
-> Service is currently unavailable due to bank downtime. (503)
+> 503 Service Unavailable: Service is currently unavailable due to bank downtime
 
 ```json
 {
@@ -1056,7 +1116,7 @@ Response Codes
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
 | 200  | Void                              | Microdeposit verified.                   |
-| 400  | RequestValidationWithoutBodyError | Invalid request.                         |
+| 400  | BadRequest | Request syntax malformed                         |
 | 400  | Validation Error                  | Verification code is not valid           |
 | 403  | ForbiddenRequestError             | Access to this funding source is denied. |
 | 403  | InvalidResourceStateError         | Cannot verify micro deposit due to invalid funding source state. |
@@ -1069,9 +1129,67 @@ Response Codes
 # Crypto Funding Source
 These endpoints are used to create cryptocurrency funding sources under a user or to retrieve cryptocurrency funding sources that belong to a user.
 
+## List crypto funding sources
+Retrieve a list of crypto funding sources that belong to the current user.
+
+> Request Example
+
+```shell
+curl -X GET 
+  "https://api.gluwa.com/V4.1/FundingSources/Crypto"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET    | <code class="highlighter-rouge"> /V4.1/FundingSources/Crypto</code> |
+
+### Responses
+
+> 200 OK: List of funding sources
+
+```json
+
+{
+"ID": "string (uuid)",
+"Country": "string",
+"Currency": "string",
+"Type": "string",
+"Status": "string",
+"InstitutionDisplayName": "string",
+"Last4DigitsOfAccountNumber": "string",
+"CryptoAddress": "string",
+"Nickname": "string"
+}
+
+*Type: [ Checking, Savings, Crypto ] - This is the type of funding source
+*Status: [ NotVerified, Verified, MicroDepositSent, Deactivated, MicroDepositSentFailed ] - Funding source status in Gluwa
+```
+
+Response Codes
+
+
+| Code | Type/Value                        | Description                              |
+|------|-----------------------------------|------------------------------------------|
+| 200 | Array: FundingSourceResponse           | List of funding sources.|
+
 ## Verify Crypto Funding Source
 
 We only support this for P2PKH BTC addresses.
+
+> Request Example
+
+```shell
+curl -X PATCH
+  "https://api.gluwa.com/V4.1/FundingSources/{ID}/SignedMessage"
+  -H "Authorization: Bearer {token}"
+  -d "{
+"Message": "string",
+"SignedMessage": "string"
+}"
+```
 
 ### Method
 
@@ -1085,7 +1203,7 @@ We only support this for P2PKH BTC addresses.
 | Property                          | Type                   | Required? | Description |
 |-----------------------------------|------------------------|-----------|-------------|
 | Message: string (up to 256 chars) | string (256 chars max) | yes       |             |
-| SignedMessage: string (88 char    | string (88 chars max)  | yes       |             |
+| SignedMessage: string (88 chars)    | string (88 chars max)  | yes       |             |
 
 
 > Request Body example
@@ -1107,13 +1225,13 @@ We only support this for P2PKH BTC addresses.
 
 ### Responses
 
-> Funding Source is verified. (200)
+> 200 OK: Funding Source is verified
 
 ```json
 {}
 ```
 
-> Invalid request. (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -1132,7 +1250,7 @@ We only support this for P2PKH BTC addresses.
 }
 ```
 
-> Signed message is invalid (400)
+> 400 Bad Request: Signed message is invalid
 
 ```json
 {
@@ -1150,7 +1268,7 @@ We only support this for P2PKH BTC addresses.
 }
 ```
 
-> Funding source is not found (404)
+> 404 Not Found: Funding source is not found
 
 ```json
 
@@ -1162,7 +1280,7 @@ We only support this for P2PKH BTC addresses.
 ```
 
 
-> Internal server error. (500)
+> 500 Internal server error
 
 ```json
 {
@@ -1175,7 +1293,7 @@ We only support this for P2PKH BTC addresses.
 }
 ```
 
-> Service is currently unavailable due to bank downtime. (503)
+> 503 Service Unavailable: Service is currently unavailable due to bank downtime
 
 ```json
 {
@@ -1199,57 +1317,33 @@ Response Codes
 
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
-| 200  | Void                              | Microdeposit verified.                   |
-| 400  | RequestValidationWithoutBodyError | Invalid request.                         |
+| 200  | Void                              | Microdeposit verified                   |
+| 400  | Bad Request | Request Syntax Malformed                         |
 | 400  | Validation Error                  | Verification code is not valid           |
-| 403  | ForbiddenRequestError             | Access to this funding source is denied. |
-| 403  | InvalidResourceStateError         | Cannot verify micro deposit due to invalid funding source state. |
+| 403  | ForbiddenRequestError             | Access to this funding source is denied |
+| 403  | InvalidResourceStateError         | Cannot verify micro deposit due to invalid funding source state |
 | 404  | NotFoundError                     | Microdeposit was never initiated         |
-| 500  | InternalServerError.              | Internal server error.                   |
-| 503  | ServiceUnavailableError           | Service is currently unavailable due to bank downtime. |
+| 500  | InternalServerError             | Internal server error                 |
+| 503  | ServiceUnavailableError           | Service is currently unavailable due to bank downtime |
 
-## List crypto funding sources
-Retrieve a list of crypto funding sources that belong to the current user.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge"> /V4.1/FundingSources/Crypto</code> |
-
-
-
-### Responses
-
-> List of funding sources. (200)
-
-```json
-[
-
-{
-"ID": "string (uuid)",
-"Country": "string",
-"Currency": "string",
-"Type": "string",
-"Status": "string",
-"InstitutionDisplayName": "string",
-"Last4DigitsOfAccountNumber": "string",
-"CryptoAddress": "string",
-"Nickname": "string"
-}
-
-]
-```
-
-Response Codes
-
-
-| Code | Type/Value                        | Description                              |
-|------|-----------------------------------|------------------------------------------|
-| 200 | Array: FundingSourceResponse           | List of funding sources.|
 
 ## Create a cryptocurrency funding source
 Create a new cryptocurrency funding source for the current user.
+
+> Request Example
+
+```shell
+curl -X POST
+  "https://api.gluwa.com/V4.1/FundingSources/Crypto"
+  -H "Authorization: Bearer {token}"
+  -d "{
+"Currency": "string",
+"Address": "string",
+"Message": "string",
+"SignedMessage": "string",
+"Nickname": "string"
+}"
+```
 
 ### Method
 
@@ -1268,7 +1362,6 @@ Create a new cryptocurrency funding source for the current user.
 | SignedMessage | string range (88 chars)       | no        | Signed message created by using Message and the private key. This is used to verify that the address provided is a legitimate P2PKH address. |
 | Nickname      | string                        | yes       | User-specified nickname for funding source |
 
-
 > Request Body example
 
 ```json
@@ -1285,7 +1378,7 @@ Create a new cryptocurrency funding source for the current user.
 
 ### Responses
 
-> Funding Source is created. (201)
+> 201 Created: Funding Source is created
 
 ```json
 {
@@ -1295,7 +1388,7 @@ Create a new cryptocurrency funding source for the current user.
 }
 ```
 
-> Invalid request body. (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -1313,7 +1406,7 @@ Create a new cryptocurrency funding source for the current user.
 }
 ```
 
-> Funding source already exists (409)
+> 409 Conflict: Funding source already exists
 
 ```json
 {
@@ -1331,7 +1424,548 @@ Create a new cryptocurrency funding source for the current user.
 ```
 
 
-> Internal server error. (500)
+> 500 Internal server error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+| Code | Type/Value                        | Description                   |
+|------|-----------------------------------|-------------------------------|
+| 201  | GuidResponse                      | Funding source is created.    |
+| 400  | RequestValidationWithoutBodyError | Invalid request body.         |
+| 400  | Validation Error                  | Invalid request Body          |
+| 409  | Conflict Error                    | Funding Source Already Exists |
+| 500  | InternalServerError.              | Internal server error.        |
+
+# Wallet
+
+A Wallet is where your Gluwacoin is stored. You can also have multiple wallets across multiple countries and currencies. 
+
+The Wallet API resource allows creating, retrieving, and activating locked wallets.
+
+## List wallets
+
+Retrieve a list of wallets for the current user.
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET    | <code class="highlighter-rouge">/V4.1/Wallets</code> |
+
+### Responses
+
+> 200 OK: List of Wallets associated to current user
+
+```json
+[
+  {
+    "ID": "string (uuid)",
+    "Balance": "string",
+    "Country": "string",
+    "Currency": "string",
+    "Status": "string"
+  }
+]
+```
+
+> 401 Unauthorized: Invalid credentials
+
+```json
+{
+    "Code": "InvalidCredentials",
+    "Message": "Client does not have permission to access this service."
+}
+```
+
+> 500 Internal Server Error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+| Code | Type/Value             | Description           |
+|------|------------------------|-----------------------|
+| 200  | Array <WalletResponse> | List of wallets       |
+| 401  | InvalidCredentials | Invalid Credentials       |
+| 500  | InternalServerError    | Internal Server Error |
+
+## Search wallet by ID
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{ID}"
+  -H "Authorization: Bearer {token}"
+ ```
+ 
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET  | <code class="highlighter-rouge">/V4.1/Wallets/{ID}</code> |
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Wallet ID. |
+
+
+### Responses
+
+> 200 OK: Wallet with the specified ID
+
+```json
+{
+    "ID": "string",
+    "Balance": "string",
+    "Country": "string",
+    "Currency": "string",
+    "Status": "string"
+}
+```
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Bad Request: Wallet is not found
+
+```json
+{
+    "Code": "NotFound",
+    "Message": "Wallet not found."
+}
+```
+> 500 Internal Server Error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+Response Codes
+
+
+| Code | Type/Value                        | Description                      |
+|------|-----------------------------------|----------------------------------|
+| 200  | WalletResponse                    | Wallet with the specified ID.    |
+| 400  | RequestValidationWithoutBodyError | Invalid request.                 |
+| 403  | ForbiddenRequestError             | Access to this wallet is denied. |
+| 404  | NotFoundError                     | Wallet is not found              |
+| 500  | InternalServerError               | Server error.                    |
+
+## Get the fee models associated to a wallet.
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{ID}/FeeModel"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET    | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/FeeModel</code> |
+
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Funding Source ID. |
+
+
+### Responses
+
+> 200 OK: List of Fee models
+ 
+```json
+{
+        "Currency": "string",
+        "Country": "string",
+        "TransactionType": "string",
+        "MinimumFee": "string",
+        "Tiers": [
+            {
+                "FeeRate": "string",
+                "MonthlyThresholdAmount": "string"
+            }
+        ]
+    }
+
+*TransactionType: [ Deposit, Send, Receive, Withdraw ] - The fee shown is associated to the displayed type of transaction.
+
+```
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Not Found: Wallet is not found
+
+```json
+{
+    "Code": "NotFound",
+    "Message": "Wallet not found."
+}
+```
+> 500 Internal Server Error 
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+Response Codes
+
+
+| Code | Type/Value                        | Description                      |
+|------|-----------------------------------|----------------------------------|
+| 200  | Array <FeeModel>                  | List of fee models.              |
+| 400  | RequestValidationWithoutBodyError | Request Parameter is not valid.  |
+| 403  | ForbiddenRequestError             | Access to this wallet is denied. |
+| 404  | NotFoundError                     | Wallet is not found.             |
+| 500  | InternalServerError               | Server Error.                    |
+
+## Create a new wallet for the current user.
+
+> Request Example
+
+```shell
+curl -X POST
+  "https://api.gluwa.com/V4.1/Wallets/"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "Country": "string",
+  "Currency": "string"
+}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| POST   | <code class="highlighter-rouge"> /V4.1/Wallets</code> |
+
+### Request Body
+
+| Property | Type                         | Required? | Description                             |
+|----------|------------------------------|-----------|-----------------------------------------|
+| Country  | string enum: [World, US, KR] | yes       | Country that the wallet can be used in. |
+| Currency | string enum: [KRW, USD]      | yes       | Currency that the wallet can hold.      |
+
+> Request Body example
+
+```json
+{
+  "Country": "string",
+  "Currency": "string"
+}
+```
+
+### Responses
+
+> 201 Created: New Wallet created
+
+```json
+{
+  "ID": "string (uuid)"
+}
+```
+
+> 400 Forbidden: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 403 Forbidden: Wallet is locked
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 403 Internal Server Error
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 409 Conflict: Wallet with specified country and currency already exists
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 503 Internal Server Error
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+Response Codes
+
+
+| Code | Type/Value                     | Description                              |
+|------|--------------------------------|------------------------------------------|
+| 201  | Invalid Request                 | New Wallet Created.                      |
+| 400  | RequestValidationWithBodyError | Invalid Request.                         |
+| 403  | ForbiddenRequestError          | Locked wallet found. User must either unlock the locked wallet or remove the locked wallet first. |
+| 409  | ConflictError                  | Wallet with specified country and currency already exists. |
+| 500  | InternalServerError            | Server Error.                            |
+| 503  | ServiceUnavailableError        | Service is currently not available for the specified country and currency. |
+
+
+
+
+## Activate a locked wallet 
+Either by unlocking it or creating a new wallet. 
+
+Wallet can be unlocked by verifying the most recent payment made, or it can be closed and have its funds transferred to a new wallet.
+
+> Request Example
+
+```shell
+curl -X PATCH
+  "https://api.gluwa.com/V4.1/Wallets/{ID}/Activation"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "Type": "string",
+  "AmountPaid": "string"
+}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| PATCH    | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/Activation</code> |
+
+
+### Request Body
+
+| Property    | Type                                     | Required? | Description                              |
+|-------------|------------------------------------------|-----------|------------------------------------------|
+| Type        | string enum: [TransferFundsAndDelete, Unlock] | yes       | Type of Wallet activation request.       |
+| Amount Paid | string  | no| Payment amount for the most recent payment made. Only required when unlocking a wallet for verification purposes. |
+
+> Request Body example
+
+```json
+{
+  "Type": "string",
+  "AmountPaid": "string"
+}
+```
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Funding Source ID. |
+
+### Responses
+
+> 200 OK: Wallet is unlocked and activated
+
+```json
+{}
+```
+> 201 Created: Wallet ID of the newly created wallet. The balance is moved to the new wallet
+
+```json
+{
+  "ID": "string (uuid)"
+}
+```
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Wallet cannot be activated at current status
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Not Found: Wallet is not found
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 500 Internal Server error
 
 ```json
 {
@@ -1345,14 +1979,452 @@ Create a new cryptocurrency funding source for the current user.
 Response Codes
 
 
+| Code | Type/Value                     | Description                              |
+|------|--------------------------------|------------------------------------------|
+| 200  | Void                           | Wallet is unlocked and activated.        |
+| 201  | GuidResponse                   | Wallet ID of the newly created wallet. The balance is moved to the new wallet. |
+| 400  | RequestValidationWithBodyError | Invelid Request                          |
+| 400  | ValidationError                | Validation error. Please see inner errors for more details. |
+| 400  | BadRequestError                | Requested activation type is not supported. |
+| 403  | ForbiddenRequestError          | Access to this wallet is denied.         |
+| 403  | InvalidResourceStateError      | Wallet cannot be activated at current status. |
+| 404  | NotFoundError                  | List of virtual accounts.List of virtual accounts. |
+| 500  | InternalServerError            | Server Error                             |
 
-| Code | Type/Value                        | Description                   |
-|------|-----------------------------------|-------------------------------|
-| 201  | GuidResponse                      | Funding source is created.    |
-| 400  | RequestValidationWithoutBodyError | Invalid request body.         |
-| 400  | Validation Error                  | Invalid request Body          |
-| 409  | Conflict Error                    | Funding Source Already Exists |
-| 500  | InternalServerError.              | Internal server error.        |
+## Get webhook information
+You need to be enrolled in our webhook service in order to use this feature.
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{ID}/Webhook"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET   | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/Webhook</code> |
+
+
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Wallet ID. |
+
+### Responses
+
+> 200 OK: Returns the wallet's Webhook
+
+```json
+{
+  "URL": "string",
+  "CreatedDateTime": "string (date-time)",
+  "ModifiedDateTime": "string (date-time)",
+  "FeeAmount": "string"
+}
+```
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Not Found: Webhook does not exist
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 500 Internal Server error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+
+| Code | Type/Value                        | Description                      |
+|------|-----------------------------------|----------------------------------|
+| 200  | WebhookResponse                   | Return the Wallet's Webhook.     |
+| 400  | RequestValidationWithoutBodyError | Invalid Request.                 |
+| 403  | ForbiddenRequestError             | Access to this wallet is denied. |
+| 404  | NotFoundError                     | Webhook does not exist.          |
+| 500  | InternalServerError               | Server Error.                    |
+
+## Create or update webhook URL and secret
+You need to be enrolled in our webhook service in order to use this feature.
+
+> Request Example
+
+```shell
+curl -X PUT
+  "https://api.gluwa.com/V4.1/Wallets/{ID}/Webhook"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "WebhookUrl": "string",
+  "Secret": "string"
+}"
+```
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| PUT   | <code class="highlighter-rouge"> /V4.1/Wallets/{ID}/Webhook</code> |
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Wallet ID. |
+
+### Request Body
+
+| Property   | Type                                | Required? | Description                              |
+|------------|-------------------------------------|-----------|------------------------------------------|
+| WebhookURL | string                              | yes       | URL that Gluwa should send webhook requests to |
+| Secret     | string range: (16 to 256 chars max) | yes       | Any request Gluwa sends to WebhookUrl will be signed by using SHA256 HMAC hash of the request body json. Secret is used as the key for SHA256 HMAC hash |
+
+> Request Body example
+
+```json
+{
+  "WebhookUrl": "string",
+  "Secret": "string"
+}
+```
+
+### Responses
+
+> 200 OK: Webhook is updated
+
+```json
+{
+  "URL": "string",
+  "CreatedDateTime": "string (date-time)",
+  "ModifiedDateTime": "string (date-time)",
+  "FeeAmount": "string"
+}
+```
+> 201 Accepted: Webhook is created
+
+```json
+{
+  "URL": "string",
+  "CreatedDateTime": "string (date-time)",
+  "ModifiedDateTime": "string (date-time)",
+  "FeeAmount": "string"
+}
+```
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Not Found: Wallet does not exist
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 500 Internal Server error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+
+| Code | Type/Value                     | Description                              |
+|------|--------------------------------|------------------------------------------|
+| 200  | WebhookResponse                | Webhook is updated.                      |
+| 201  | WebhookResponse                | Webhook is created.                      |
+| 400  | RequestValidationWithBodyError | Invalid request. Check the format of the wallet ID. |
+| 403  | ForbiddenRequestError          | Access to this wallet is denied.         |
+| 404  | NotFoundError                  | Wallet does not exist.                   |
+| 500  | InternalServerError            | Server error.                            |
+
+
+
+## Generate QR code for transaction request
+Returns QR code as an image if URL query parameter `format` was passed.
+Supported formats are .jpeg and .png . 
+Returns QR code as Base64 string if `format` parameter was not passed.
+
+> Request Example
+
+```shell
+curl -X POST
+  "https://api.gluwa.com/V4.1/Wallets/{ID}/QRCode?format=.jpeg"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "Amount": "string",
+  "MerchantOrderID": "string",
+  "Note": "string"
+}"
+```
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| POST   | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/QRCode</code> |
+
+### Parameters
+
+| Name | Type/Value   | Required | Path/Query | Description        |
+|------|--------------|----------|------------|--------------------|
+| ID   | String: uuid | yes      | Path       | Wallet ID. |
+| format   | String [ .jpeg, .png ]| no      | Query       | Request Body |
+
+### Request Body
+
+| Property        | Type                        | Required? | Description                              |
+|-----------------|-----------------------------|-----------|------------------------------------------|
+| Amount          | string                      | yes       | Amount to be paid to the merchant        |
+| MerchantOrderID | string range (60 chars max) | no        | Optional field for the merchant's order ID |
+| Note            | string range (250 char max) | no        | Optional field that will appear on the transaction's note |
+
+> Request Body example
+
+```json
+{
+  "Amount": "string",
+  "MerchantOrderID": "string",
+  "Note": "string"
+}
+```
+
+
+### Responses
+
+> 200 OK: QR code image with specified format (Void)
+
+```json
+{}
+```
+> 200 OK: QR code image with specified format (String)
+
+```json
+"string"
+```
+> 400 Bad Request: Request syntax malformed / Requested MIME type is not supported
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Not Found: Wallet not found
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 500 Internal Server error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+
+| Code | Type/Value                     | Description                           |
+|------|--------------------------------|---------------------------------------|
+| 200  | Void.                          | QR code image with specified format.  |
+| 200  | String.                        | List of virtual accounts.             |
+| 400  | BadRequestError                | Requested MIME type is not supported. |
+| 403  | ForbiddenRequestError          | Access to this wallet is denied.      |
+| 404  | NotFoundError                  | Wallet not found.                     |
+| 500  | InternalServerError            | Server Error.                         |
+
+# User
+
+## Search by username
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Users?searchTerm=john&limit=3"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET| <code class="highlighter-rouge"> /V4.1/Users
+</code> |
+
+### Request Parameters
+
+
+| Name       | Type/Value      | Required | Path/Query | Description                              |
+|------------|-----------------|----------|------------|------------------------------------------|
+| searchTerm | string          | no       | Query      | Username as the search term.             |
+| offset     | integer (int32) | no       | Query      | Number of users to skip from the beginning of list. Used for pagination. Defaults to 0. |
+| limit      | integer (int32) | no       | Query      | Number of users in the result. Defaults to 20, maximum of 50. |
+
+
+### Responses 
+
+> 200 OK: List of users that contain the search term in their username
+
+```json
+[
+  {
+    "ID": "string (uuid)",
+    "Username": "string"
+  }
+]
+```
+
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 500 Internal Server Error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+| Code | Type/Value                               | Description                              |
+|------|------------------------------------------|------------------------------------------|
+| 200  | Array <User>                  | List of users that contain the search term in their username. |
+| 400  | RequestValidationWithBodyError          | Invalid request.                         |
+| 500 | InternalServerError                 | Server Error.      |
 
 
 # Transaction 
@@ -1368,17 +2440,20 @@ Transaction API resource allows retrieving a transaction or a list of transactio
 ## List of transactions associated to a wallet
 Retrieve a list of transactions sent to or from a specified wallet.
 
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Transactions?type=Deposit&fromType=Wallet"
+  -H "Authorization: Bearer {token}"
+```
+
 ### Method
 
 | Method | URL                                      |
 |--------|------------------------------------------|
 | GET  | <code class="highlighter-rouge">/V4.1/Wallets/{walletID}/Transactions </code> |
 
-> **Response Example**: Search for all transactions associated to this wallet
-
-```json
-https://api.gluwa.com/V4.1/Wallets/61b04bb0-70fc-464c-9c7e-ab56dbdc3366/Transactions
-```
 
 ### Request Parameters
 
@@ -1396,33 +2471,53 @@ https://api.gluwa.com/V4.1/Wallets/61b04bb0-70fc-464c-9c7e-ab56dbdc3366/Transact
 
 ### Responses 
 
-> List of transactions associated with the wallet. (200)
+> 200 OK: List of transactions associated with the wallet
 
 ```json
-[
+
   {
-    "ID": "string (uuid)",
-    "CreatedDateTime": "string (date-time)",
-    "ModifiedDateTime": "string (date-time)",
-    "Amount": "string",
-    "FeeAmount": "string",
-    "Type": "string",
-    "Status": "string",
-    "Currency": "string",
-    "From": {
-      "Type": "string",
-      "DisplayName": "string"
+        "ID": "string",
+        "CreatedDateTime": "string",
+        "ModifiedDateTime": "string",
+        "Amount": "string",
+        "FeeAmount": "string",
+        "Type": "string",
+        "Status": "string",
+        "Currency": "string",
+        "From": {
+            "Type": "string",
+            "DisplayName": "string"
+        },
+        "To": {
+            "Type": "string",
+            "DisplayName": "string"
+        },
+        "Note": "string"
     }
-    "To": {
-      "Type": "string",
-      "DisplayName": "string"
-    },
-    "Note": "string"
-  }
-]
+
+*Type: [ Send, Deposit, Withdraw, Receive ] - The type of transaction
+*Status: [ RequestPending, RequestCancelled, Failed, Complete ] = Current status of the transaction
+*To/From: 
+    **Type: [ GluwaWallet, External ] - Type of entity sending or receiving funds in the transaction.
+    ** DisplayName - For GluwaWallet type, this is formatted "USERNAME CURRENCY wallet". For External type, this is the string "Bank Account", localized.
 ```
 
-> Invalid request. (400)
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+    "InnerErrors": [
+        {
+            "Code": "string",
+            "Path": "string",
+            "Message": "string"
+        }
+    ],
+    "Code": "string",
+    "Message": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
 
 ```json
 {
@@ -1438,23 +2533,7 @@ https://api.gluwa.com/V4.1/Wallets/61b04bb0-70fc-464c-9c7e-ab56dbdc3366/Transact
   "ExtraData": "string"
 }
 ```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet is locked (403)
+> 403 Forbidden: Wallet is locked 
 
 ```json
 {
@@ -1463,17 +2542,16 @@ https://api.gluwa.com/V4.1/Wallets/61b04bb0-70fc-464c-9c7e-ab56dbdc3366/Transact
   "ExtraData": "string"
 }
 ```
-> Wallet is not found. (404)
+> 404 Not Found: Wallet is not found
 
 ```json
 {
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
+    "Code": "NotFound",
+    "Message": "Wallet not found."
 }
 ```
 
-> Server Error (500)
+> 500 Internal Server Error
 
 ```json
 {
@@ -1485,19 +2563,289 @@ https://api.gluwa.com/V4.1/Wallets/61b04bb0-70fc-464c-9c7e-ab56dbdc3366/Transact
 
 Response Codes
 
-
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
-| 200  | Transation Response               | List of transactions associated with the wallet. |
-| 400  | RequestValidationWithoutBodyError | Invalid request.                         |
-| 403  | ForbiddenRequestError             | Access to this wallet is denied.         |
-| 403  | InternalServerError               | Wallet is locked.                        |
-| 404  | ConflictError                     | Wallet is not found.                     |
-| 500  | InternalServerError               | Internal Server Error                    |
+| 200 | Transaction Response               | List of transactions associated with the wallet. |
+| 400 | InvalidUrlParameters | URL Parameters incorrect.                         |
+| 403 | ForbiddenRequestError             | Access to this wallet is denied / Wallet is locked        |
+| 404 | NotFound                    | Wallet is not found.                     |
+| 500 | InternalServerError               | Internal Server Error                    |
+
+## Retrieve a transaction by ID and a specified wallet
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Transactions/{transactionID}"
+  -H "Authorization: Bearer {token}"
+```
+
+### Method
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| GET | <code class="highlighter-rouge"> /V4.1/Wallets/{walletID}/Transactions/{transactionID}
+</code> |
+
+### Request Parameters
+
+| Name          | Type/Value    | Required | Path/Query | Description |
+|---------------|---------------|----------|------------|-------------|
+| walletID      | String: uuid  | yes      | Path       | Wallet ID.  |
+| transactionID |  String: uuid | yes      | Path       | Trabsaction |
+                                                                                                                               
+### Responses 
+
+> 200 OK: Transaction with the specified ID and associated with the wallet
+
+```json
+  {
+        "ID": "string",
+        "CreatedDateTime": "string",
+        "ModifiedDateTime": "string",
+        "Amount": "string",
+        "FeeAmount": "string",
+        "Type": "string",
+        "Status": "string",
+        "Currency": "string",
+        "From": {
+            "Type": "string",
+            "DisplayName": "string"
+        },
+        "To": {
+            "Type": "string",
+            "DisplayName": "string"
+        },
+        "Note": "string"
+    }
+
+*Type: [ Send, Deposit, Withdraw, Receive ] - The type of transaction
+*Status: [ RequestPending, RequestCancelled, Failed, Complete ] = Current status of the transaction
+*To/From: 
+    **Type: [ GluwaWallet, External ] - Type of entity sending or receiving funds in the transaction.
+    ** DisplayName - For GluwaWallet type, this is formatted "USERNAME CURRENCY wallet". For External type, this is the string "Bank Account", localized.
+ 
+```
+
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+    "InnerErrors": [
+        {
+            "Code": "string",
+            "Path": "string",
+            "Message": "string"
+        }
+    ],
+    "Code": "string",
+    "Message": "string"
+}
+```
+
+> 403 Forbidden: Wallet is locked
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 404 Not Found: Wallet or transaction is not found
+
+```json
+{
+    "Code": "NotFound",
+    "Message": "Transaction not found."
+}
+```
+
+> 500 Internal server error
+
+```json
+
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+
+Response Codes
+
+
+| Code | Type/Value                               | Description                              |
+|------|------------------------------------------|------------------------------------------|
+| 200  | TransactionResponse                      | Transaction with the specified ID and associated with the wallet. |
+| 400  | BadRequest                               | Request syntax malformed                 |
+| 403  | ValidationError[ECreateTransactionValidationError] | Access to this wallet is denied / Wallet is Locked |
+| 404  | NotFound                                 | Wallet or transaction is not found.      |
+| 500  | InteralServerError                       | Internal Server Error                    |
+
+## Calculate transaction fee
+Get the fee amount calculated from the amount and the type of transaction.
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Transactions/Fee"
+  -H "Authorization: Bearer {token}"
+```
+### Method
+
+
+| Method | URL                                      |
+|--------|------------------------------------------|
+| POST| <code class="highlighter-rouge"> /V4.1/Wallets/{walletID}/Transactions/Fee
+</code> |
+
+### Request Body
+
+| Property        | Type                                     | Required? | Description                              |
+|-----------------|------------------------------------------|-----------|------------------------------------------|
+| Amount          | string                                   | yes       | Transaction amount to calculate the fee for. |
+| TransactionType | string enum: (ExactAmountTransfer, Deposit, Withdraw, Receive ) | yes       | Type of transaction to calculate the fee for. |
+
+> Request Body example
+
+```json
+{
+  "Amount": "string",
+  "Type": "string"
+}
+```
+### Request Parameters
+
+
+| Name          | Type/Value    | Required | Path/Query | Description |
+|---------------|---------------|----------|------------|-------------|
+| walletID      | String: uuid  | yes      | Path       | Wallet ID.  |
+                                                                                                                               
+### Responses 
+
+> 200 OK: Calculated fee amount
+
+```json
+{
+"string"
+}
+```
+
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 403 Forbidden: Access to this wallet or transaction is denied
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Wallet is locked
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 404 Not Found: Wallet or transaction is not found
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 500 Internal server error
+
+```json
+{
+  "ID": "string (uuid)",
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+Response Codes
+
+| Code | Type/Value                     | Description                              |
+|------|--------------------------------|------------------------------------------|
+| 200  | OK                             | Calculated fee amount.                   |
+| 400  | RequestValidationWithBodyError | Invalid request.                         |
+| 400  | BadRequestError                | Bad Request                              |
+| 403  | ForbiddenRequestError          | Access to this wallet or transaction is denied. |
+| 403  | WalletLockedError              | Wallet is locked.                        |
+| 404  | NotFoundError                  | Wallet is not found                      |
+| 500  | InternalServerError            | Server Error.                            |
 
 ## Move funds to/from the current user's wallet
 Create a new transaction that moves funds to or from the current user's wallet.
 
+```shell
+curl -X POST
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Transactions"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "Type": "string",
+  "DepositType": "string",
+  "WithdrawTo": "string (uuid)",
+  "Recipient": "string",
+  "Password": "string (password)",
+  "Amount": "string",
+  "IsExactAmountTransfer": "boolean",
+  "ExactAmountTransferFee": "string",
+  "Note": "string",
+  "MerchantOrderID": "string"
+}"
+```
 ### Method
 
 
@@ -1547,54 +2895,38 @@ Create a new transaction that moves funds to or from the current user's wallet.
 
 ### Responses 
 
-> Newly created transaction. (201)
+> 201 Created: Newly created transaction
 
 ```json
-{
-  "ID": "string (uuid)",
-  "CreatedDateTime": "string (date-time)",
-  "ModifiedDateTime": "string (date-time)",
-  "Amount": "string",
-  "FeeAmount": "string",
-  "Type": "string",
-  "Status": "string",
-  "Currency": "string",
-  "From": {
-    "Type": "string",
-    "DisplayName": "string"
-  },
-  "To": {
-    "Type": "string",
-    "DisplayName": "string"
-  },
-  "Note": "string"
-}
+
+  {
+        "ID": "string",
+        "CreatedDateTime": "string",
+        "ModifiedDateTime": "string",
+        "Amount": "string",
+        "FeeAmount": "string",
+        "Type": "string",
+        "Status": "string",
+        "Currency": "string",
+        "From": {
+            "Type": "string",
+            "DisplayName": "string"
+        },
+        "To": {
+            "Type": "string",
+            "DisplayName": "string"
+        },
+        "Note": "string"
+    }
+
+*Type: [ Send, Deposit, Withdraw, Receive ] - The type of transaction
+*Status: [ RequestPending, RequestCancelled, Failed, Complete ] = Current status of the transaction
+*To/From: 
+    **Type: [ GluwaWallet, External ] - Type of entity sending or receiving funds in the transaction.
+    ** DisplayName - For GluwaWallet type, this is formatted "USERNAME CURRENCY wallet". For External type, this is the string "Bank Account", localized.
 ```
 
-> Invalid request. (400)
-
-```json
-{
-  "ID": "string (uuid)",
-  "CreatedDateTime": "string (date-time)",
-  "ModifiedDateTime": "string (date-time)",
-  "Amount": "string",
-  "FeeAmount": "string",
-  "Type": "string",
-  "Status": "string",
-  "Currency": "string",
-  "From": {
-    "Type": "string",
-    "DisplayName": "string"
-  },
-  "To": {
-    "Type": "string",
-    "DisplayName": "string"
-  },
-  "Note": "string"
-}
-```
-> Validation error. See inner errors for more details. (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -1610,7 +2942,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
   "ExtraData": "string"
 }
 ```
-> Bad request. (400)
+> 400 Bad Request: Validation error, see inner errors for more details
 
 ```json
 {
@@ -1626,7 +2958,23 @@ Create a new transaction that moves funds to or from the current user's wallet.
   "ExtraData": "string"
 }
 ```
-> Access to this wallet is denied. (403)
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
 
 ```json
 {
@@ -1643,7 +2991,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-> Wallet is suspended. (403)
+> 403 Forbidden: Wallet is suspended
 
 ```json
 {
@@ -1653,7 +3001,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-> Wallet is locked. (403)
+> 403 Forbidden: Wallet is locked
 
 ```json
 
@@ -1664,7 +3012,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-> Wallet is not found. (404)
+> 404 Not Found: Wallet is not found
 
 ```json 
 {
@@ -1674,7 +3022,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-> There already exists a requested bank deposit transaction. (409)
+> 409 Conflict: There already exists a requested bank deposit transaction
 
 ```json
 {
@@ -1691,7 +3039,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-> Server error. (500)
+> 500 Internal server error
 
 ```json
 {
@@ -1702,7 +3050,7 @@ Create a new transaction that moves funds to or from the current user's wallet.
 }
 ```
 
-> Service unavailable. (503)
+> 503 Service unavailable
 
 ```json
 {
@@ -1724,7 +3072,7 @@ Response Codes
 | Code | Type/Value                               | Description                              |
 |------|------------------------------------------|------------------------------------------|
 | 201  | TransactionResponse                      | List of transactions associated with the wallet. |
-| 400  | RequestValidationWithBodyError           | Invalid request.                         |
+| 400  | BadRequest           | Request syntax malformed                       |
 | 400  | ValidationError[ECreateTransactionValidationError] | Access to this wallet is denied.         |
 | 400  | BadRequestError                          | Wallet is locked.                        |
 | 403  | ForbiddenRequestError                    | Wallet is not found.                     |
@@ -1735,132 +3083,20 @@ Response Codes
 | 500  | InternalServerError                      | Service error.                           |
 | 503  | ServiceUnavailableError                  | Service unavaialable                     |
 
-## Retrieve a transaction by ID and a specified wallet
-
-### Method
-
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET | <code class="highlighter-rouge"> /V4.1/Wallets/{walletID}/Transactions/{transactionID}
-</code> |
-
-### Request Parameters
-
-
-| Name          | Type/Value    | Required | Path/Query | Description |
-|---------------|---------------|----------|------------|-------------|
-| walletID      | String: uuid  | yes      | Path       | Wallet ID.  |
-| transactionID |  String: uuid | yes      | Path       | Trabsaction |
-                                                                                                                               
-### Responses 
-
-> Transaction with the specified ID and associated with the wallet. (200)
-
-```json
-{
-  "ID": "string (uuid)",
-  "CreatedDateTime": "string (date-time)",
-  "ModifiedDateTime": "string (date-time)",
-  "Amount": "string",
-  "FeeAmount": "string",
-  "Type": "string",
-  "Status": "string",
-  "Currency": "string",
-  "From": {
-    "Type": "string",
-    "DisplayName": "string"
-  },
-  "To": {
-    "Type": "string",
-    "DisplayName": "string"
-  },
-  "Note": "string"
-}
- 
-```
-
-> Invalid request. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Wallet is locked. (403)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Wallet or transaction is not found. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Server error. (500)
-
-```json
-
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-
-)
-Response Codes
-
-| Code | Type/Value                               | Description                              |
-|------|------------------------------------------|------------------------------------------|
-| 200  | TransactionResponse                      | Transaction with the specified ID and associated with the wallet. |
-| 400  | RequestValidationWithBodyError           | Invalid request.                         |
-| 403  | ValidationError[ECreateTransactionValidationError] | Access to this wallet is denied.         |
-| 403  | BadRequestError                          | Wallet is locked.                        |
-| 404  | ForbiddenRequestError                    | Wallet or transaction is not found.      |
-| 500  | Wallet is suspended.                     | Internal Server Error                    |
 
 ## Cancel requested deposit
 Cancel a deposit transaction that has previously been requested.
 
+> Request Example
+
+```shell
+curl -X PATCH
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Transactions/{transactionsID}"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "Action": "string",
+}"
+```
 ### Method
 
 
@@ -1869,42 +3105,38 @@ Cancel a deposit transaction that has previously been requested.
 | PATCH| <code class="highlighter-rouge">  /V4.1/Wallets/{walletID}/Transactions/{transactionID}
 </code> |
 
+### Parameters
+
+| Name          | Type/Value    | Required | Path/Query | Description |
+|---------------|---------------|----------|------------|-------------|
+| walletID      | String: uuid  | yes      | Path       | Wallet ID.  |
+| transactionID |  String: uuid | yes      | Path       | Transaction |
+                                                                         
 ### Request Body
 
 
 | Property | Type                                     | Required? | Description                              |
 |----------|------------------------------------------|-----------|------------------------------------------|
-| Amount   | string                                   | yes       | Transaction amount to calculate the fee for |
-| Type     | string enum: (ExactAmountTransfer, Deposit, Withdraw, Receive) | yes       | Type of transaction to calculate the fee for. |
-
-
+| Action   | String: [Cancel]                          | yes       | Transaction to be canceled |
 
 > Request Body example
 
 ```json
 {
-  "Message": "string",
-  "SignedMessage": "string"
+  "Action": "string"
 }
 ```
-### Request Parameters
-
-
-| Name          | Type/Value    | Required | Path/Query | Description |
-|---------------|---------------|----------|------------|-------------|
-| walletID      | String: uuid  | yes      | Path       | Wallet ID.  |
-| transactionID |  String: uuid | yes      | Path       | Trabsaction |
-                                                                                                                               
+ 
 ### Responses 
 
-> Transaction has been successfully canceled. (200)
+> 200 OK: Transaction has been successfully canceled
 
 ```json
 {}
  
 ```
 
-> Invalid request. (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -1921,7 +3153,7 @@ Cancel a deposit transaction that has previously been requested.
 }
 ```
 
-> Access to this wallet is denied. (403)
+> 403 Forbidden: Access to this wallet is denied
 
 ```json
 {
@@ -1937,7 +3169,7 @@ Cancel a deposit transaction that has previously been requested.
   "ExtraData": "string"
 }
 ```
-> Transaction does not have a valid status to be cancelled. (403)
+> 403 Forbidden: Transaction does not have a valid status to be cancelled
 
 ```json
 {
@@ -1954,7 +3186,7 @@ Cancel a deposit transaction that has previously been requested.
 }
 ```
 
-> Wallet or transaction is not found. (404)
+> 404 Not Found: Wallet or transaction is not found
 
 ```json
 {
@@ -1964,7 +3196,7 @@ Cancel a deposit transaction that has previously been requested.
 }
 ```
 
-> Server error. (500)
+> 500 Internal server error
 
 ```json
 {
@@ -1987,151 +3219,24 @@ Response Codes
 | 404  | NotFoundError                  | Wallet or transaction is not found.      |
 | 500  | InternalServerError            | Internal Server Error                    |
 
-## Calculate transaction fee
-Get the fee amount calculated from the amount and the type of transaction.
-
-### Method
-
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| POST| <code class="highlighter-rouge"> /V4.1/Wallets/{walletID}/Transactions/Fee
-</code> |
-
-### Request Body
-
-
-
-| Property        | Type                                     | Required? | Description                              |
-|-----------------|------------------------------------------|-----------|------------------------------------------|
-| Amount          | string                                   | yes       | Transaction amount to calculate the fee for. |
-| TransactionType | string enum: (ExactAmountTransfer, Deposit, Withdraw, Receive ) | yes       | Type of transaction to calculate the fee for. |
-
-
-
-> Request Body example
-
-```json
-{
-  "Amount": "string",
-  "Type": "string"
-}
-```
-### Request Parameters
-
-
-| Name          | Type/Value    | Required | Path/Query | Description |
-|---------------|---------------|----------|------------|-------------|
-| walletID      | String: uuid  | yes      | Path       | Wallet ID.  |
-                                                                                                                               
-### Responses 
-
-> Calculated fee amount. (200)
-
-```json
-{
-"string"
-}
-```
-
-> Invalid request. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Bad Request (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet or transaction is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet is locked. (403)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet or transaction is not found. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Server error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-
-Response Codes
-
-
-| Code | Type/Value                     | Description                              |
-|------|--------------------------------|------------------------------------------|
-| 200  |                                | Calculated fee amount.                   |
-| 400  | RequestValidationWithBodyError | Invalid request.                         |
-| 400  | BadRequestError                | Bad Request                              |
-| 403  | ForbiddenRequestError          | Access to this wallet or transaction is denied. |
-| 403  | WalletLockedError              | Wallet is locked.                        |
-| 404  | NotFoundError                  | Wallet is not found                      |
-| 500  | InternalServerError            | Server Error.                            |
-
-## Get a quote for depositing and withdrawing
+## Get a quote for crypto depositing and withdrawing
 Get a quote for crypto deposit and withdraw transactions.
 
-### Method
+> Request Example
 
+```shell
+curl -X POST
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Quote"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "Amount": "string",
+  "TransactionType": "string",
+  "CryptoCurrency": "string",
+  "Password": "string (password)"
+}"
+```
+
+### Method
 
 | Method | URL                                      |
 |--------|------------------------------------------|
@@ -2143,12 +3248,10 @@ Get a quote for crypto deposit and withdraw transactions.
 
 | Property        | Type                             | Required? | Description                              |
 |-----------------|----------------------------------|-----------|------------------------------------------|
-| Amount          | string                           | yes       |                                          |
-| TransactionType | string enum: (Deposit, Withdraw) | yes       | Type of transaction that the quote is to be used for. |
-| CryptoCurrency  | string enum: [BTC]               | yes       | Cryptocurrency for the quote amount to be provided. |
-| Password        | string                           | no        | User password for verification.          |
-
-
+| Amount          | string                           | yes       | The value to be quoted                   |
+| TransactionType | string enum: (Deposit, Withdraw) | yes       | Type of transaction that the quote is to be used for |
+| CryptoCurrency  | string enum: [BTC]               | yes       | Cryptocurrency for the quote amount to be provided |
+| Password        | string                           | no        | User password for verification          |
 
 > Request Body example
 
@@ -2169,7 +3272,7 @@ Get a quote for crypto deposit and withdraw transactions.
                                                                                                                                
 ### Responses 
 
-> Create quote and checksum. (200)
+> 200 OK: Get he quote and checksum
 
 ```json
 {
@@ -2183,9 +3286,19 @@ Get a quote for crypto deposit and withdraw transactions.
   "TimeToLive": "integer (int64)",
   "Checksum": "string"
 }
+
+*SourceAmount - Currency amount that the quote is requested with
+*TargetAmount - Cryptocurrency amount that corresponds to the requested currency amount
+*TargetPrice - Cryptocurrency price in source currency
+*SourceCurrency - Currency for the SourceAmount parameter
+*TargetCurrency - Cryptocurrency for the TargetAmount parameter
+*TransactionType - Type of transaction that the quote is for
+*CreatedDateTime - Date and time when the quote is created
+*TimeToLive - Amount of time in seconds in which the quote is valid, from the time when the quote is created
+*Checksum - Checksum for the Quote object. Must be obtained from Gluwa via the Quote endpoint.
 ```
 
-> Invalid request. (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -2202,23 +3315,7 @@ Get a quote for crypto deposit and withdraw transactions.
 }
 ```
 
-> Validation error. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet or transaction is denied. (403)
+> 403 Forbidden:  Access to this wallet or transaction is denied
 
 ```json
 {
@@ -2235,7 +3332,7 @@ Get a quote for crypto deposit and withdraw transactions.
 }
 ```
 
-> Wallet is locked. (403)
+> 403 Forbidden: Wallet is locked
 
 ```json
 {
@@ -2245,7 +3342,7 @@ Get a quote for crypto deposit and withdraw transactions.
 }
 ```
 
-> Wallet or transaction is not found. (404)
+> 404 Not Found: Wallet or transaction is not found
 
 ```json
 {
@@ -2255,7 +3352,7 @@ Get a quote for crypto deposit and withdraw transactions.
 }
 ```
 
-> Server error. (500)
+> 500 Internal Server error
 
 ```json
 {
@@ -2266,7 +3363,7 @@ Get a quote for crypto deposit and withdraw transactions.
 }
 ```
 
-> Service unavailable. (503)
+> 503 Service unavailable
 
 ```json
 {
@@ -2289,9 +3386,7 @@ Response Codes
 | Code | Type/Value                               | Description                              |
 |------|------------------------------------------|------------------------------------------|
 | 200  | QuoteResponse                            | Created quote and checksum.              |
-| 400  | RequestValidationWithBodyError           | Invalid request.                         |
-| 400  | ValidationError[ECreateTransactionValidationError] | Validation error. See inner errors for more details. |
-| 400  | BadRequestError                          | Bad Request                              |
+| 400  | BadRequest           | Request syntax Malformed                        |
 | 403  | ForbiddenRequestError                    | Access to this wallet or transaction is denied. |
 | 403  | WalletLockedError                        | Wallet is locked.                        |
 | 404  | NotFoundError                            | Wallet is not found                      |
@@ -2301,8 +3396,27 @@ Response Codes
 ## Create a new transaction using quote provided
 Create a new transaction with the quote that was previously provided by Gluwa.
 
-### Method
+> Request Example
 
+```shell
+curl -X POST
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/Quote"
+  -H "Authorization: Bearer {token}"
+  -d "{
+  "SourceAmount": "string",
+  "TargetAmount": "string",
+  "TargetPrice": "string",
+  "SourceCurrency": "string",
+  "TargetCurrency": "string",
+  "TransactionType": "string",
+  "WithdrawTo": "string (uuid)",
+  "CreatedDateTime": "string (date-time)",
+  "TimeToLive": "integer (int64)",
+  "Checksum": "string"
+}"
+```
+
+### Method
 
 | Method | URL                                      |
 |--------|------------------------------------------|
@@ -2310,9 +3424,6 @@ Create a new transaction with the quote that was previously provided by Gluwa.
 </code> |
 
 ### Request Body
-
-
-
 
 | Property        | Type                             | Required? | Description                              |
 |-----------------|----------------------------------|-----------|------------------------------------------|
@@ -2326,8 +3437,6 @@ Create a new transaction with the quote that was previously provided by Gluwa.
 | CreatedDateTime | string (Date-Time)               | no        | Date and time when the quote is created. |
 | TimeToLive      | integer (int64)                  | yes       | Amount of time in seconds in which the quote is valid, from the time when the quote is created. |
 | Checksum        | string                           | yes       | Checksum for the Quote object. Must be obtained from Gluwa via the Quote endpoint. |
-
-
 
 > Request Body example
 
@@ -2354,7 +3463,7 @@ Create a new transaction with the quote that was previously provided by Gluwa.
                                                                                                                                
 ### Responses 
 
-> Newly created transaction. (201)
+> OK Created: Transaction created 
 
 ```json
 {
@@ -2376,9 +3485,31 @@ Create a new transaction with the quote that was previously provided by Gluwa.
   },
   "Note": "string"
 }
+
+*Type: [ Send, Deposit, Withdraw, Receive ] - The type of transaction
+*Status: [ RequestPending, RequestCancelled, Failed, Complete ] = Current status of the transaction
+*To/From: 
+    **Type: [ GluwaWallet, External ] - Type of entity sending or receiving funds in the transaction.
+    ** DisplayName - For GluwaWallet type, this is formatted "USERNAME CURRENCY wallet". For External type, this is the string "Bank Account", localized.
 ```
 
-> Invalid request. (400)
+> 400 Bad Request: Request syntax malformed
+
+```json
+{
+  "InnerErrors": [
+    {
+      "Code": "string",
+      "Path": "string",
+      "Message": "string"
+    }
+  ],
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+> 403 Forbidden: Access to this wallet is denied
 
 ```json
 {
@@ -2395,7 +3526,28 @@ Create a new transaction with the quote that was previously provided by Gluwa.
 }
 ```
 
-> Validation error. (400)
+> 403 Forbidden: Wallet is suspended
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+> 404 Not Found: Wallet not found 
+
+```json
+{
+  "Code": "string",
+  "Message": "string",
+  "ExtraData": "string"
+}
+```
+
+
+> 409 Conflict: There already exists a requested crypto deposit transaction. Cancel the pending transaction or wait until it expires
 
 ```json
 {
@@ -2411,41 +3563,7 @@ Create a new transaction with the quote that was previously provided by Gluwa.
   "ExtraData": "string"
 }
 ```
-
-> Bad Request. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Wallet is suspended. (403)
+> 429 Too many requests: Client Error
 
 ```json
 {
@@ -2454,53 +3572,7 @@ Create a new transaction with the quote that was previously provided by Gluwa.
   "ExtraData": "string"
 }
 ```
-
-> Wallet is locked. (403)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet not found. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-
-> There already exists a requested crypto deposit transaction. Cancel the pending transaction or wait until it expires. (409)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Client Error. (429)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server Error (500)
+> 500 Internal Server Error
 
 ```json
 {
@@ -2510,7 +3582,7 @@ Create a new transaction with the quote that was previously provided by Gluwa.
   "ExtraData": "string"
 }
 ```
-> Service unavailable. (503)
+> 503 Service unavailable
 
 ```json
 {
@@ -2527,7 +3599,6 @@ Create a new transaction with the quote that was previously provided by Gluwa.
 }
 ```
 Response Codes
-
 
 | Code | Type/Value                               | Description                              |
 |------|------------------------------------------|------------------------------------------|
@@ -2544,81 +3615,6 @@ Response Codes
 | 500  | InternalServerError                      | Server Error.                            |
 | 503  | ServiceUnavailableError                  | Service Unavailable                      |
 
-# User
-
-## Search by username
-
-### Method
-
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET| <code class="highlighter-rouge"> /V4.1/Users
-</code> |
-
-### Request Parameters
-
-
-| Name       | Type/Value      | Required | Path/Query | Description                              |
-|------------|-----------------|----------|------------|------------------------------------------|
-| searchTerm | string          | no       | Query      | Username as the search term.             |
-| offset     | integer (int32) | no       | Query      | Number of users to skip from the beginning of list. Used for pagination. Defaults to 0. |
-| limit      | integer (int32) | no       | Query      | Number of users in the result. Defaults to 20, maximum of 50. |
-
-> **Request Example**: Search for the first 3 users that contain the term 'John'
-
-```json
-https://api.gluwa.com/V4.1/Users?searchTerm=john&limit=3
-```
-
-### Responses 
-
-> 200 OK: List of users that contain the search term in their username
-
-```json
-[
-  {
-    "ID": "string (uuid)",
-    "Username": "string"
-  }
-]
-```
-
-> Validation error. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Server Error (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-Response Codes
-
-| Code | Type/Value                               | Description                              |
-|------|------------------------------------------|------------------------------------------|
-| 200  | Array <User>                  | List of users that contain the search term in their username. |
-| 400  | RequestValidationWithBodyError          | Invalid request.                         |
-| 500 | InternalServerError                 | Server Error.      |
 
 # Virtual Account
 
@@ -2629,6 +3625,14 @@ Virtual Account is a virtual bank account that belongs to Gluwa. Each user will 
 When fiat currency is deposited into this virtual bank account, Gluwa will accredit the user's wallet with the same amount in Gluwacoin. The VirtualAccount resource can be used to view virtual accounts linked to a wallet.
 
 ## Get virtual accounts linked to a wallet
+
+> Request Example
+
+```shell
+curl -X GET
+  "https://api.gluwa.com/V4.1/Wallets/{walletID}/VirtualAccounts"
+  -H "Authorization: Bearer {token}"
+```
 
 ### Method
 
@@ -2643,11 +3647,10 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
 | Name       | Type/Value      | Required | Path/Query | Description                              |
 |------------|-----------------|----------|------------|------------------------------------------|
 | walletID | string (uuid)      | yes       | Path     | Wallet ID             |
-|
-                                                                                                                               
+   
 ### Responses 
 
-> List of virtual accounts. (200)
+> 200 OK: List of virtual accounts
 
 ```json
 [
@@ -2659,7 +3662,7 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
 ]
 ```
 
-> Invalid Request (400)
+> 400 Bad Request: Request syntax malformed
 
 ```json
 {
@@ -2676,7 +3679,7 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
 }
 ```
 
-> Identity verification is required to use virtual accounts. (403)
+> 403 Forbidden: Identity verification required / Wallet is locked / Account cannot be used in Korea
 
 ```json
 {
@@ -2686,16 +3689,7 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
 }
 ```
 
-> Your wallet is locked. (403)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
+> 403 Forbidden: Access to this wallet is denied
 
 ```json
 {
@@ -2711,7 +3705,8 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
   "ExtraData": "string"
 }
 ```
-> Virtual accounts are not supported because this wallet cannot be used in Korea. (403)
+
+> 404 Forbidden: Wallet is not found
 
 ```json
 {
@@ -2720,16 +3715,7 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
   "ExtraData": "string"
 }
 ```
-> Wallet is not found. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server Error. (500)
+> 500 Internal Server Error
 
 ```json
 {
@@ -2740,7 +3726,6 @@ When fiat currency is deposited into this virtual bank account, Gluwa will accre
 }
 ```
 Response Codes
-
 
 | Code | Type/Value                        | Description                              |
 |------|-----------------------------------|------------------------------------------|
@@ -2752,885 +3737,4 @@ Response Codes
 | 403  | VirtualAccountsNotSupportedError  | Virtual accounts are not supported because this wallet cannot be used in Korea. |
 | 404  | NotFoundError                     | Wallet is not found.                     |
 | 500  | InternalServerError               | Server error.                            |
-
-# Wallet
-
-A Wallet is where your Gluwacoin is stored. You can also have multiple wallets across multiple countries and currencies. 
-
-The Wallet API resource allows creating, retrieving, and activating locked wallets.
-
-## List wallets
-
-Retrieve a list of wallets for the current user.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">/V4.1/Wallets</code> |
-
-
-### Responses
-
-> 200 OK. List of Wallets associated to current user
-
-```json
-[
-  {
-    "ID": "string (uuid)",
-    "Balance": "string",
-    "Country": "string",
-    "Currency": "string",
-    "Status": "string"
-  }
-]
-```
-
-> 401 Unauthorized: Invalid credentials
-
-```json
-{
-    "Code": "InvalidCredentials",
-    "Message": "Client does not have permission to access this service."
-}
-```
-
-> Internal Server Error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-Response Codes
-
-
-| Code | Type/Value             | Description           |
-|------|------------------------|-----------------------|
-| 200  | Array <WalletResponse> | List of wallets       |
-| 401  | InvalidCredentials | Invalid Credentials       |
-| 500  | InternalServerError    | Internal Server Error |
-
-## Create a new wallet for the current user.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| POST   | <code class="highlighter-rouge"> /V4.1/Wallets</code> |
-
-### Request Body
-
-| Property | Type                         | Required? | Description                             |
-|----------|------------------------------|-----------|-----------------------------------------|
-| Country  | string enum: [World, US, KR] | yes       | Country that the wallet can be used in. |
-| Currency | string enum: [KRW, USD]      | yes       | Currency that the wallet can hold.      |
-
-
-> Request Body example
-
-```json
-{
-  "Country": "string",
-  "Currency": "string"
-}
-```
-
-### Responses
-
-> New Wallet created. (201)
-
-```json
-{
-  "ID": "string (uuid)"
-}
-```
-
-> Invalid Request (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Locked wallet found. User must either unlock the locked wallet or remove the locked wallet first. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Server Error(409)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Wallet with specified country and currency already exists. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-> Server currently unavailable for specified currency our country. (503)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-Response Codes
-
-
-| Code | Type/Value                     | Description                              |
-|------|--------------------------------|------------------------------------------|
-| 201  | Invalid Request                 | New Wallet Created.                      |
-| 400  | RequestValidationWithBodyError | Invalid Request.                         |
-| 403  | ForbiddenRequestError          | Locked wallet found. User must either unlock the locked wallet or remove the locked wallet first. |
-| 409  | ConflictError                  | Wallet with specified country and currency already exists. |
-| 500  | InternalServerError            | Server Error.                            |
-| 503  | ServiceUnavailableError        | Service is currently not available for the specified country and currency. |
-
-
-
-## Search wallet by ID
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET  | <code class="highlighter-rouge">/V4.1/Wallets/{ID}</code> |
-
-### Parameters
-
-| Name | Type/Value   | Required | Path/Query | Description        |
-|------|--------------|----------|------------|--------------------|
-| ID   | String: uuid | yes      | Path       | Wallet ID. |
-
-### Responses
-
-> Wallet with the specified ID. (200)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Balance": "string",
-  "Country": "string",
-  "Currency": "string",
-  "Status": "string"
-}
-```
-> Invalid Request. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet is not found.(404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server Error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-Response Codes
-
-
-| Code | Type/Value                        | Description                      |
-|------|-----------------------------------|----------------------------------|
-| 200  | WalletResponse                    | Wallet with the specified ID.    |
-| 400  | RequestValidationWithoutBodyError | Invalid request.                 |
-| 403  | ForbiddenRequestError             | Access to this wallet is denied. |
-| 404  | NotFoundError                     | Wallet is not found              |
-| 500  | InternalServerError               | Server error.                    |
-
-## Activate a locked wallet 
-Either by unlocking it or creating a new wallet. 
-
-Wallet can be unlocked by verifying the most recent payment made, or it can be closed and have its funds transferred to a new wallet.
-
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| PATCH    | <code class="highlighter-rouge">//V4.1/Wallets/{ID}/Activation</code> |
-
-### Request Body
-
-
-| Property                          | Type                   | Required? | Description |
-|-----------------------------------|------------------------|-----------|-------------|
-| Type | string enum: [TransferFundsAndDelete, Unlock] | yes       |Type of Wallet activation request.             |
-| Amount Paid | string | no       | Payment amount for the most recent payment made. Only required when unlocking a wallet for verification purposes.            |
-
-> Request Body example
-
-```json
-{
-  "Type": "string",
-  "AmountPaid": "string"
-}
-```
-
-### Parameters
-
-| Name | Type/Value   | Required | Path/Query | Description        |
-|------|--------------|----------|------------|--------------------|
-| ID   | String: uuid | yes      | Path       | Funding Source ID. |
-
-### Responses
-
-> Wallet is unlocked and activated. (200)
-
-```json
-{}
-```
-> Wallet ID of the newly created wallet. The balance is moved to the new wallet. (201)
-
-```json
-{
-  "ID": "string (uuid)"
-}
-```
-> Invalid Request(400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Validation error. Please see inner errors for more details. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Requested activation type is not supported. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet cannot be activated at current status. (403)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet is not found. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-Response Codes
-
-
-| Code | Type/Value                     | Description                              |
-|------|--------------------------------|------------------------------------------|
-| 200  | Void                           | Wallet is unlocked and activated.        |
-| 201  | GuidResponse                   | Wallet ID of the newly created wallet. The balance is moved to the new wallet. |
-| 400  | RequestValidationWithBodyError | Invelid Request                          |
-| 400  | ValidationError                | Validation error. Please see inner errors for more details. |
-| 400  | BadRequestError                | Requested activation type is not supported. |
-| 403  | ForbiddenRequestError          | Access to this wallet is denied.         |
-| 403  | InvalidResourceStateError      | Wallet cannot be activated at current status. |
-| 404  | NotFoundError                  | List of virtual accounts.List of virtual accounts. |
-| 500  | InternalServerError            | Server Error                             |
-
-## Get the fee models associated to a wallet.
-
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET    | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/FeeModel</code> |
-
-
-### Parameters
-
-| Name | Type/Value   | Required | Path/Query | Description        |
-|------|--------------|----------|------------|--------------------|
-| ID   | String: uuid | yes      | Path       | Funding Source ID. |
-
-### Responses
-
-> List of Fee models (200)
-
-```json
-[
-  {
-    "Currency": "string",
-    "Country": "string",
-    "TransactionType": "string",
-    "MinimumFee": "string",
-    "Tiers": [
-      {
-        "FeeRate": "string",
-        "MonthlyThresholdAmount": "string"
-      }
-    ]
-  }
-]
-```
-> Request parameter is not valid. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. 403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet is not found (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server Error (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-Response Codes
-
-
-| Code | Type/Value                        | Description                      |
-|------|-----------------------------------|----------------------------------|
-| 200  | Array <FeeModel>                  | List of fee models.              |
-| 400  | RequestValidationWithoutBodyError | Request Parameter is not valid.  |
-| 403  | ForbiddenRequestError             | Access to this wallet is denied. |
-| 404  | NotFoundError                     | Wallet is not found.             |
-| 500  | InternalServerError               | Server Error.                    |
-
-## Get webhook information
-You need to be enrolled in our webhook service in order to use this feature.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| GET   | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/Webhook</code> |
-
-### Parameters
-
-| Name | Type/Value   | Required | Path/Query | Description        |
-|------|--------------|----------|------------|--------------------|
-| ID   | String: uuid | yes      | Path       | Funding Source ID. |
-
-### Responses
-
-> Returns the wallet's Webhook. (200)
-
-```json
-{
-  "URL": "string",
-  "CreatedDateTime": "string (date-time)",
-  "ModifiedDateTime": "string (date-time)",
-  "FeeAmount": "string"
-}
-```
-> Invalid request. Check the format of the wallet ID. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Webhook does not exist.(404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-Response Codes
-
-
-| Code | Type/Value                        | Description                      |
-|------|-----------------------------------|----------------------------------|
-| 200  | WebhookResponse                   | Return the Wallet's Webhook.     |
-| 400  | RequestValidationWithoutBodyError | Invalid Request.                 |
-| 403  | ForbiddenRequestError             | Access to this wallet is denied. |
-| 404  | NotFoundError                     | Webhook does not exist.          |
-| 500  | InternalServerError               | Server Error.                    |
-
-## Create or update webhook URL and secret
-You need to be enrolled in our webhook service in order to use this feature.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| PUT   | <code class="highlighter-rouge"> /V4.1/Wallets/{ID}/Webhook</code> |
-
-### Request Body
-
-
-
-| Property   | Type                                | Required? | Description                              |
-|------------|-------------------------------------|-----------|------------------------------------------|
-| WebhookURL | string                              | yes       | URL that Gluwa should send webhook requests to |
-| Secret     | string range: (16 to 256 chars max) | yes       | Any request Gluwa sends to WebhookUrl will be signed by using SHA256 HMAC hash of the request body json. Secret is used as the key for SHA256 HMAC hash |
-
-
-
-> Request Body example
-
-```json
-{
-  "WebhookUrl": "string",
-  "Secret": "string"
-}
-```
-
-### Parameters
-
-| Name | Type/Value   | Required | Path/Query | Description        |
-|------|--------------|----------|------------|--------------------|
-| ID   | String: uuid | yes      | Path       | Funding Source ID. |
-
-### Responses
-
-> Webhook is updated.(200)
-
-```json
-{
-  "URL": "string",
-  "CreatedDateTime": "string (date-time)",
-  "ModifiedDateTime": "string (date-time)",
-  "FeeAmount": "string"
-}
-```
-> Webhook is created. (201)
-
-```json
-{
-  "URL": "string",
-  "CreatedDateTime": "string (date-time)",
-  "ModifiedDateTime": "string (date-time)",
-  "FeeAmount": "string"
-}
-```
-> Invalid request. Check the format of the wallet ID.(400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet does not exist. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-Response Codes
-
-
-| Code | Type/Value                     | Description                              |
-|------|--------------------------------|------------------------------------------|
-| 200  | WebhookResponse                | Webhook is updated.                      |
-| 201  | WebhookResponse                | Webhook is created.                      |
-| 400  | RequestValidationWithBodyError | Invalid request. Check the format of the wallet ID. |
-| 403  | ForbiddenRequestError          | Access to this wallet is denied.         |
-| 404  | NotFoundError                  | Wallet does not exist.                   |
-| 500  | InternalServerError            | Server error.                            |
-
-
-
-## Generate QR code for transaction request
-Returns QR code as an image if URL query parameter `format` was passed.
-
-Supported formats are .jpeg and .png . 
-
-Returns QR code as Base64 string if `format` parameter was not passed.
-
-### Method
-
-| Method | URL                                      |
-|--------|------------------------------------------|
-| POST   | <code class="highlighter-rouge">/V4.1/Wallets/{ID}/QRCode</code> |
-
-### Request Body
-
-
-
-| Property        | Type                        | Required? | Description                              |
-|-----------------|-----------------------------|-----------|------------------------------------------|
-| Amount          | string                      | yes       | Amount to be paid to the merchant        |
-| MerchantOrderID | string range (60 chars max) | no        | Optional field for the merchant's order ID |
-| Note            | string range (250 char max) | no        | Optional field that will appear on the transaction's note |
-
-> Request Body example
-
-```json
-{
-  "Amount": "string",
-  "MerchantOrderID": "string",
-  "Note": "string"
-}
-```
-
-### Parameters
-
-
-| Name   | Type/Value   | Required | Path/Query | Description        |
-|--------|--------------|----------|------------|--------------------|
-| ID     | string: uuid | yes      | Path       | Funding Source ID. |
-| format | string       | yes      | Query      | Request body.      |
-
-### Responses
-
-> QR code image with specified format. (Void) (200)
-
-```json
-{}
-```
-> QR code image with specified format (String) (200)
-
-```json
-"string"
-```
-> Bad Request. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Requested MIME type is not supported. (400)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Access to this wallet is denied. (403)
-
-```json
-{
-  "InnerErrors": [
-    {
-      "Code": "string",
-      "Path": "string",
-      "Message": "string"
-    }
-  ],
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Wallet not found. (404)
-
-```json
-{
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-> Server error. (500)
-
-```json
-{
-  "ID": "string (uuid)",
-  "Code": "string",
-  "Message": "string",
-  "ExtraData": "string"
-}
-```
-
-Response Codes
-
-
-| Code | Type/Value                     | Description                           |
-|------|--------------------------------|---------------------------------------|
-| 200  | Void.                          | QR code image with specified format.  |
-| 200  | String.                        | List of virtual accounts.             |
-| 400  | RequestValidationWithBodyError | Bad Request.                          |
-| 400  | BadRequestError                | Requested MIME type is not supported. |
-| 403  | ForbiddenRequestError          | Access to this wallet is denied.      |
-| 404  | NotFoundError                  | Wallet not found.                     |
-| 500  | InternalServerError            | Server Error.                         |
-
 
