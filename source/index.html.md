@@ -34,11 +34,6 @@ user flow doc
 	* [Authorization Code flow](#authorization-code-flow)
 	* [Implicit flow](#implicit-flow)
 	* [Hybrid flow](#hybrid-flow)
-	* [Client Credentials As User](#client-credentials-as-user)
-	* [Logging out](#logging-out)
-	* [Revocation endpoint](#revocation-endpoint)
-	* [End Session Endpoint](#end-session-endpoint)
-	* [Session management](#session-management)
 * [Endpoints and Resources](#endpoints-and-resources)
 * [Bank](#bank)
 	* [List Banks](#list-banks)
@@ -549,7 +544,7 @@ Before using the ID Token and Access Token, client must validate the tokens as l
 
 The last step is to sign in to your own app so that you can navigate around secured parts of your app. 
 
-## Client Credentials As User
+### Client Credentials As User
 
 > Example request
 
@@ -569,7 +564,7 @@ You can send the request to the auth server as follows:
 | POST   | connect/token | auth.gluwa.com | application/x-www-form-urlencoded | no-cache      |
 
 
-## Logging out
+### Logging out
 
 Logout from your own client, not the Gluwa Auth server. 
 
@@ -577,7 +572,7 @@ Should you really want to logout from both your own client and on Gluwa Auth ser
 
 **Note that if you do decide to use these endpoints, you are logging the user out completely from Gluwa Auth system, meaning that they will also be logged out of other clients that may not be in your control.**
 
-## Revocation endpoint
+### Revocation endpoint
 
 > Example request
 
@@ -596,7 +591,7 @@ You can revoke token by:
 
 You cannot revoke access token. Access token lifetime is set to 1 hour.
 
-## End Session Endpoint
+### End Session Endpoint
 
 | Method | URL      |
 |--------|----------|
@@ -607,7 +602,7 @@ For the details of each query parameter, please click [here](http://docs.identit
 
 Again, if state is provided, the auth server will give this back in your `post_redirect_uri` so you can validate the state after redirection.
 
-## Session management
+### Session management
 
 The documentation for session status detection can be found [here](http://openid.net/specs/openid-connect-session-1_0.html#ChangeNotification). 
 
